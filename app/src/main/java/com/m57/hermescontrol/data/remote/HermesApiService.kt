@@ -7,6 +7,7 @@ import com.m57.hermescontrol.data.model.ActiveProfileResponse
 import com.m57.hermescontrol.data.model.AddMcpServerRequest
 import com.m57.hermescontrol.data.model.AgentPluginInstallBody
 import com.m57.hermescontrol.data.model.AnalyticsResponse
+import com.m57.hermescontrol.data.model.ArrierePlanResponse
 import com.m57.hermescontrol.data.model.AudioTranscriptionRequest
 import com.m57.hermescontrol.data.model.AudioTranscriptionResponse
 import com.m57.hermescontrol.data.model.AuxiliaryModelsResponse
@@ -552,6 +553,10 @@ interface HermesApiService : KanbanApiService {
         @Path("name") name: String,
         @Body body: ToolsetPostSetupRequest,
     ): Response<ToolsetPostSetupResponse>
+
+    // Fourche noronuke : conversations avec un processus en arrière-plan vivant (pastille grise).
+    @GET("api/plugins/arriere-plan/sessions")
+    suspend fun getArrierePlan(): Response<ArrierePlanResponse>
 
     @GET("api/plugins/hermes-achievements/achievements")
     suspend fun getAchievements(): Response<AchievementsResponse>

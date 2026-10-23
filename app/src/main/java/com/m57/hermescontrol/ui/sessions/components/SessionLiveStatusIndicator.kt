@@ -2,6 +2,10 @@ package com.m57.hermescontrol.ui.sessions.components
 
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.runtime.getValue
+import androidx.compose.foundation.border
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -147,14 +151,47 @@ private fun SessionLiveStatus.icon(): ImageVector =
     }
 
 
-/** Fourche noronuke : pastille ronde de 8 dp devant le titre d'une conversation. */
+/**
+ * Fourche noronuke : pastille ronde de 8 dp devant le titre d'une conversation.
+ *
+ * Un processus en arrière-plan encore vivant ([enArrierePlan]) donne un anneau gris qui clignote,
+ * comme sur le bureau : il l'emporte sur « fini, pas lu », mais cède devant un tour en cours ou une
+ * attente de réponse, qui disent davantage.
+ */
 @androidx.compose.runtime.Composable
 internal fun SessionStatusDot(
     liveStatus: SessionLiveStatus?,
     sessionId: String,
     modifier: Modifier = Modifier,
+    enArrierePlan: Boolean = false,
 ) {
     val statusColors = LocalHermesStatusColors.current
+    val arrierePlanVisible =
+        enArrierePlan &&
+            (liveStatus == null || liveStatus == SessionLiveStatus.DONE || liveStatus == SessionLiveStatus.FAILED)
+    if (arrierePlanVisible) {
+        val transition = androidx.compose.animation.core.rememberInfiniteTransition(label = "arriere_plan")
+        val alpha by transition.animateFloat(
+            initialValue = 1f,
+            targetValue = 0.25f,
+            animationSpec =
+                androidx.compose.animation.core.infiniteRepeatable(
+                    animation = androidx.compose.animation.core.tween(durationMillis = 900),
+                    repeatMode = androidx.compose.animation.core.RepeatMode.Reverse,
+                ),
+            label = "arriere_plan_alpha",
+        )
+        val grey = androidx.compose.material3.MaterialTheme.colorScheme.outline
+        androidx.compose.foundation.layout.Box(
+            modifier =
+                modifier
+                    .testTag("session_status_dot_$sessionId")
+                    .size(8.dp)
+                    .graphicsLayer { this.alpha = alpha }
+                    .border(1.5.dp, grey, CircleShape),
+        )
+        return
+    }
     val color =
         liveStatus?.let { statusBadgeColors(it.badgeType(), statusColors)?.first }
             ?: androidx.compose.material3.MaterialTheme.colorScheme.outlineVariant

@@ -149,12 +149,17 @@ data class SessionsUiState(
     val groupByProject: Boolean = false,
     val collapsedProjectGroups: Set<String> = emptySet(),
     val liveStatuses: Map<String, SessionLiveStatus> = emptyMap(),
+    // Fourche noronuke : conversations dont un processus en arrière-plan tourne encore (pastille grise).
+    val arrierePlan: Set<String> = emptySet(),
     // Issue #1642: Done/Failed marks for sessions finished since the user last opened them.
     val attention: Map<String, SessionLiveStatus> = emptyMap(),
     // Named projects used to label each row with the workspace it belongs to.
     val projects: List<ProjectInfo> = emptyList(),
 ) {
     val isSearchMode: Boolean get() = searchQuery.isNotBlank()
+
+    /** Fourche noronuke : un processus en arrière-plan de cette conversation tourne encore. */
+    fun enArrierePlan(sessionId: String): Boolean = sessionId in arrierePlan
 
     /** The badge for [sessionId]: live gateway state first, else a Done/Failed mark, else none. */
     fun statusFor(sessionId: String): SessionLiveStatus? =
@@ -423,6 +428,7 @@ class SessionsViewModel(
         const val MAX_STITCH_PER_PAGE = 8
         const val MAX_STITCH_ROUNDS = 3
         const val LIVE_STATUS_POLL_INTERVAL_MS = 30_000L
+        const val ARRIERE_PLAN_POLL_INTERVAL_MS = 15_000L
     }
 
     private val resolvedParentCache = mutableMapOf<String, SessionInfo>()
@@ -1800,6 +1806,7 @@ class SessionsViewModel(
                         } else {
                             requestLiveStatusSnapshot(++trackingGeneration)
                             loadProjects()
+                            refreshArrierePlan()
                         }
                     }
                 }
@@ -1820,6 +1827,7 @@ class SessionsViewModel(
                         .filter { it.type == ChangeEvents.SESSIONS }
                         .collect {
                             requestLiveStatusSnapshot(trackingGeneration)
+                            refreshArrierePlan()
                         }
                 }
 
@@ -1830,6 +1838,34 @@ class SessionsViewModel(
                         requestLiveStatusSnapshot(trackingGeneration)
                     }
                 }
+
+                // Fourche noronuke : processus en arrière-plan, relus plus souvent que le reste
+                // (une commande de fond dure souvent moins d'une minute).
+                launch {
+                    while (true) {
+                        refreshArrierePlan()
+                        delay(ARRIERE_PLAN_POLL_INTERVAL_MS)
+                    }
+                }
+            }
+    }
+
+    private var arrierePlanJob: Job? = null
+
+    /**
+     * Fourche noronuke : le registre des processus vit dans chaque processus Hermes, `process.list` ne
+     * voit que ceux de la passerelle du mobile. Le greffon serveur `arriere-plan` les réunit tous.
+     * Un échec (serveur sans le greffon, hors ligne) garde l'état précédent sans rien afficher d'autre.
+     */
+    private fun refreshArrierePlan() {
+        if (arrierePlanJob?.isActive == true) return
+        arrierePlanJob =
+            viewModelScope.launch {
+                val response = runCatching { ApiClient.hermesApi.getArrierePlan() }.getOrNull() ?: return@launch
+                val body = response.body()
+                if (!response.isSuccessful || body == null) return@launch
+                val ids = body.sessions.toSet()
+                _uiState.update { if (it.arrierePlan == ids) it else it.copy(arrierePlan = ids) }
             }
     }
 

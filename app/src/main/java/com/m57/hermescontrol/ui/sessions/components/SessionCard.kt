@@ -179,6 +179,7 @@ fun SessionCard(
     isArchived: Boolean = false,
     historyActionsEnabled: Boolean = true,
     liveStatus: SessionLiveStatus? = null,
+    enArrierePlan: Boolean = false,
     project: SessionProject? = null,
     nowMillis: Long = System.currentTimeMillis(),
     highlightBackground: Color,
@@ -245,7 +246,7 @@ fun SessionCard(
                     // Fourche noronuke : pastille à gauche du titre, comme l'appli de bureau
                     // (bleu pendant la réflexion, vert fini et pas lu, gris sinon).
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                    SessionStatusDot(liveStatus = liveStatus, sessionId = session.id)
+                    SessionStatusDot(liveStatus = liveStatus, sessionId = session.id, enArrierePlan = enArrierePlan)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text =
