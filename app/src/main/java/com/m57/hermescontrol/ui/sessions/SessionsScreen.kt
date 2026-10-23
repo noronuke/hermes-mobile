@@ -1,5 +1,6 @@
 package com.m57.hermescontrol.ui.sessions
 
+import com.m57.hermescontrol.data.model.SessionLiveStatus
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -101,6 +102,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.m57.hermescontrol.ChatScreen
+import com.m57.hermescontrol.Allegement
 import com.m57.hermescontrol.NavigationController
 import com.m57.hermescontrol.R
 import com.m57.hermescontrol.applock.AlertDialog
@@ -228,8 +230,15 @@ fun SessionsScreen(
             state.sourceFilter,
             state.projectFilter,
             state.projects,
+            state.liveStatuses,
+            state.attention,
         ) {
-            displayedSessions(state)
+            // Fourche noronuke : les conversations qui tournent ou attendent une réponse restent en tête
+            // (tri stable : l'ordre habituel est gardé à l'intérieur des deux groupes).
+            displayedSessions(state).sortedByDescending { item ->
+                val st = state.statusFor(item.session.id)
+                st == SessionLiveStatus.WORKING || st?.isWaiting == true
+            }
         }
 
     val pinnedItems =
@@ -536,14 +545,19 @@ fun SessionsScreen(
         isRefreshing = state.isLoading,
         onRefresh = { viewModel.loadSessions(forceRefresh = true) },
         actions = {
-            IconButton(
+            // Fourche noronuke : bouton « Nouvelle » bien visible, avec son libellé.
+            FilledTonalButton(
                 onClick = { NavigationController.openNewChat() },
-                modifier = Modifier.testTag("sessions_action_new_chat"),
+                modifier = Modifier.padding(end = 4.dp).testTag("sessions_action_new_chat"),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
-                    contentDescription = stringResource(R.string.content_desc_new_chat),
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
                 )
+                Spacer(Modifier.width(4.dp))
+                Text(stringResource(R.string.sessions_new_short))
             }
             if (state.hasHiddenSessions) {
                 IconButton(
@@ -591,7 +605,8 @@ fun SessionsScreen(
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
             }
-            Row(
+            // Fourche noronuke : liste épurée, aucune puce de filtre (voir Allegement.filtresConversations).
+            if (Allegement.filtresConversations) Row(
                 modifier =
                     Modifier
                         .fillMaxWidth()
@@ -627,7 +642,7 @@ fun SessionsScreen(
 
             // Source chips: hidden until a loaded row actually carries that source.
             val sources = state.availableSources
-            if (sources.size > 1) {
+            if (Allegement.filtresConversations && sources.size > 1) {
                 LazyRow(
                     modifier = Modifier.fillMaxWidth().testTag("history_source_chips"),
                     contentPadding = PaddingValues(horizontal = spacing.md),
@@ -646,7 +661,7 @@ fun SessionsScreen(
 
             // Project chips (issue #1526): only for projects present in the rows currently shown.
             val projectChoices = state.availableProjects
-            if (state.section == HistorySection.CONVERSATIONS && projectChoices.size > 1) {
+            if (Allegement.filtresConversations && state.section == HistorySection.CONVERSATIONS && projectChoices.size > 1) {
                 LazyRow(
                     modifier = Modifier.fillMaxWidth().testTag("history_project_chips"),
                     contentPadding = PaddingValues(horizontal = spacing.md),
@@ -934,15 +949,7 @@ fun SessionsScreen(
                                     modifier = Modifier.padding(spacing.md),
                                 )
                             }
-                            // ── Stats row ───────────────────────────────────────
-                            SessionsStatsRow(
-                                total = state.total,
-                                loadedMessageCount = loadedMessageCount,
-                                section = state.section,
-                                spacing = spacing,
-                                statusColors = statusColors,
-                                onPruneClick = { viewModel.showPruneDialog() },
-                            )
+                            // Fourche noronuke : les compteurs passent en pied de liste (plus bas).
 
                             // ── Session list ────────────────────────────────────
                             val listState = rememberLazyListState()
@@ -1165,6 +1172,17 @@ fun SessionsScreen(
                                             }
                                         }
                                     }
+                                }
+                                // Fourche noronuke : compteurs (total, messages chargés, purge) tout en bas.
+                                item(key = "stats_footer") {
+                                    SessionsStatsRow(
+                                        total = state.total,
+                                        loadedMessageCount = loadedMessageCount,
+                                        section = state.section,
+                                        spacing = spacing,
+                                        statusColors = statusColors,
+                                        onPruneClick = { viewModel.showPruneDialog() },
+                                    )
                                 }
                             }
                         }

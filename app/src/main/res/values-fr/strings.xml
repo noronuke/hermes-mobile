@@ -178,7 +178,8 @@
     <string name="local_models_action_resume">Reprendre</string>
     <string name="screen_kanban">Kanban</string>
     <string name="screen_achievements">Succès</string>
-    <string name="screen_history">Historique</string>
+    <string name="sessions_new_short">Nouvelle</string>
+    <string name="screen_history">Conversations</string>
     <string name="screen_projects">Projets</string>
     <string name="projects_action_new">Nouveau projet</string>
     <string name="projects_action_create">Créer</string>

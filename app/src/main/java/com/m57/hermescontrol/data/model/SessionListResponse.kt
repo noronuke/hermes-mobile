@@ -88,6 +88,10 @@ data class SessionInfo(
     // Epoch seconds of the latest message (backend-computed, present on all
     // list rows). Recency source of truth; started_at is the fallback.
     val last_active: Double? = null,
+    // Fourche noronuke : champs de la base partagée, renseignés quel que soit le canal (bureau, Signal, mobile).
+    val last_activity_at: Double? = null,
+    val last_activity_description: String? = null,
+    val unread: Boolean? = null,
     // Original root id when this row is a compression-projected tip. Branch
     // children reference the ROOT id in parent_session_id, so tree building
     // must alias this id to this row (desktop byVisibleId parity).

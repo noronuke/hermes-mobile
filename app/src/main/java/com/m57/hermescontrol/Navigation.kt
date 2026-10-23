@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -285,10 +286,11 @@ fun MainNavigation(sessionId: String? = null) {
     // a list (History, Bots): then the first back returns to that list (Telegram
     // chat-list parity) and only a further double-back exits.
     BackHandler(enabled = currentScreen == ChatScreen && backStack.size == 1) {
-        val pendingReturn = NavigationController.chatReturnScreen
-        if (pendingReturn != null) {
+        // Fourche noronuke : depuis une conversation ouverte, le retour mène toujours à la liste des
+        // conversations ; seule une conversation neuve (vide) garde la double pression pour sortir.
+        if (NavigationController.chatSessionOpen) {
             NavigationController.consumeChatReturnScreen()
-            NavigationController.navigateTo(pendingReturn)
+            NavigationController.navigateTo(HistoryScreen)
         } else {
             val now = System.currentTimeMillis()
             if (now - lastBackPressTime < 2000L) {
@@ -298,6 +300,11 @@ fun MainNavigation(sessionId: String? = null) {
                 Toast.makeText(context, backToastText, Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    // Fourche noronuke : le retour depuis la liste des conversations ouvre une conversation neuve.
+    BackHandler(enabled = currentScreen == HistoryScreen) {
+        NavigationController.openNewChat()
     }
 
     // Safety fallback: if a non-chat screen somehow sits alone on stack, swipe back returns to ChatScreen
@@ -349,6 +356,9 @@ fun MainNavigation(sessionId: String? = null) {
     }
 }
 
+/** Fourche noronuke : largeur du tiroir modal, menu court. */
+private val TiroirLargeur = 260.dp
+
 /**
  * Wide windows show [drawerBody] in a permanent sidebar; narrow windows show it in a modal
  * drawer. The modal drawer stays composed in both modes so resizing never recreates [content].
@@ -378,10 +388,15 @@ internal fun AdaptiveNavigationShell(
                 drawerState = drawerState,
                 gesturesEnabled = gesturesEnabled && !wideWindow,
                 drawerContent = {
+                    // Fourche noronuke : le défilement porté par la feuille elle-même la réduisait à la hauteur
+                    // de son contenu ; il passe dans une colonne intérieure pour que le tiroir prenne tout
+                    // l'écran, et la feuille est plus étroite puisque le menu est court.
                     ModalDrawerSheet(
-                        modifier = Modifier.verticalScroll(rememberScrollState()),
+                        modifier = Modifier.width(TiroirLargeur).fillMaxHeight(),
                     ) {
-                        drawerBody(onModalItemClick)
+                        Column(modifier = Modifier.fillMaxHeight().verticalScroll(rememberScrollState())) {
+                            drawerBody(onModalItemClick)
+                        }
                     }
                 },
                 content = content,

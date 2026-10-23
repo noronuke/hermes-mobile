@@ -23,5 +23,8 @@ object Allegement {
     /** Réglages cosmétiques de la conversation (statistiques, effet de frappe) : masqués. */
     val reglagesCosmetiques: Boolean = false
 
+    /** Fourche noronuke : puces de filtre de la liste des conversations (section, archivées, source, projet). */
+    val filtresConversations: Boolean = false
+
     fun permet(key: NavKey): Boolean = key !in interdits
 }

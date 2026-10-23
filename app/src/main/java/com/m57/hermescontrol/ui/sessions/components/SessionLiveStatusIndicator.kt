@@ -1,5 +1,7 @@
 package com.m57.hermescontrol.ui.sessions.components
 
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -143,3 +145,24 @@ private fun SessionLiveStatus.icon(): ImageVector =
         SessionLiveStatus.FAILED -> Icons.Filled.Error
         else -> Icons.Filled.Warning
     }
+
+
+/** Fourche noronuke : pastille ronde de 8 dp devant le titre d'une conversation. */
+@androidx.compose.runtime.Composable
+internal fun SessionStatusDot(
+    liveStatus: SessionLiveStatus?,
+    sessionId: String,
+    modifier: Modifier = Modifier,
+) {
+    val statusColors = LocalHermesStatusColors.current
+    val color =
+        liveStatus?.let { statusBadgeColors(it.badgeType(), statusColors)?.first }
+            ?: androidx.compose.material3.MaterialTheme.colorScheme.outlineVariant
+    androidx.compose.foundation.layout.Box(
+        modifier =
+            modifier
+                .testTag("session_status_dot_$sessionId")
+                .size(8.dp)
+                .background(color, CircleShape),
+    )
+}

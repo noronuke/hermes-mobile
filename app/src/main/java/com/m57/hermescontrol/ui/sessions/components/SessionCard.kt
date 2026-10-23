@@ -242,6 +242,11 @@ fun SessionCard(
 
                     Spacer(modifier = Modifier.height(spacing.xs))
 
+                    // Fourche noronuke : pastille à gauche du titre, comme l'appli de bureau
+                    // (bleu pendant la réflexion, vert fini et pas lu, gris sinon).
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    SessionStatusDot(liveStatus = liveStatus, sessionId = session.id)
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text =
                             if (query.isNotBlank()) {
@@ -255,6 +260,7 @@ fun SessionCard(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
+                    }
 
                     val preview =
                         session.preview

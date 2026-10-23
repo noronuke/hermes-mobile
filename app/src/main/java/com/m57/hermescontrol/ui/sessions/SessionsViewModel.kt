@@ -157,7 +157,18 @@ data class SessionsUiState(
     val isSearchMode: Boolean get() = searchQuery.isNotBlank()
 
     /** The badge for [sessionId]: live gateway state first, else a Done/Failed mark, else none. */
-    fun statusFor(sessionId: String): SessionLiveStatus? = liveStatuses[sessionId] ?: attention[sessionId]
+    fun statusFor(sessionId: String): SessionLiveStatus? =
+        liveStatuses[sessionId] ?: attention[sessionId] ?: sharedStatus(sessionId)
+
+    /**
+     * Fourche noronuke : `session.active_list` ne connaît que les tours lancés par la passerelle à laquelle
+     * l'appli parle ; ceux du bureau ou de Signal tournent dans d'autres processus et n'y figurent jamais.
+     * La base, elle, est commune : un tour en cours y tient une description d'activité fraîche, et
+     * `unread` dit qu'une réponse est arrivée après la dernière lecture. On s'en sert en repli.
+     */
+    private fun sharedStatus(sessionId: String): SessionLiveStatus? {
+        return sessions.firstOrNull { it.id == sessionId }?.let(::sharedStatusOf)
+    }
 
     val archivedQuery: String? get() = if (showArchived) "only" else null
 
@@ -1913,3 +1924,20 @@ class SessionsViewModel(
         stopLiveStatusTracking()
     }
 }
+
+
+/** Fourche noronuke : statut tiré des champs partagés de la base (voir [SessionsUiState.statusFor]). */
+internal fun sharedStatusOf(row: SessionInfo): SessionLiveStatus? {
+    val at = row.last_activity_at
+    val working =
+        !row.last_activity_description.isNullOrBlank() &&
+            at != null && System.currentTimeMillis() / 1000.0 - at < SHARED_ACTIVITY_FRESH_S
+    return when {
+        working -> SessionLiveStatus.WORKING
+        row.unread == true -> SessionLiveStatus.DONE
+        else -> null
+    }
+}
+
+/** Un tour vivant rafraîchit sa description d'activité bien plus souvent que ça. */
+private const val SHARED_ACTIVITY_FRESH_S = 180.0

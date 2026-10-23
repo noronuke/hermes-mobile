@@ -359,7 +359,8 @@ fun FullBleedChatList(
                                         key = "reasoning-${reasoning.id}",
                                         contentType = FullBleedContentType.REASONING,
                                     ) {
-                                        Column(modifier = Modifier.padding(bottom = 6.dp)) {
+                                        // Fourche noronuke : mêmes marges que la prose et les outils (16 dp), partout.
+                                        Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 6.dp)) {
                                             ReasoningCard(
                                                 reasoningText = reasoning.reasoningText,
                                                 isStreaming = reasoning.isStreaming,
@@ -398,6 +399,8 @@ fun FullBleedChatList(
                                                     contentType = FullBleedContentType.REASONING,
                                                 ) {
                                                     ReasoningCard(
+                                                        // Fourche noronuke : même largeur et même écart que le bloc hissé.
+                                                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 6.dp),
                                                         reasoningText = proseMessage.reasoningText,
                                                         isStreaming = proseMessage.isStreaming,
                                                         searchQuery =

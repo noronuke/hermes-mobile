@@ -206,6 +206,10 @@ fun ChatScreen(
     }
     // Issue #1642: the open session is "seen". Clear its Done/Failed mark and suppress new ones while it is
     // on screen; leaving Chat or backgrounding the app lets later completions mark it again.
+    // Fourche noronuke : le retour depuis une conversation ouverte mène à la liste des conversations.
+    LaunchedEffect(state.currentSessionId) {
+        NavigationController.chatSessionOpen = !state.currentSessionId.isNullOrBlank()
+    }
     androidx.lifecycle.compose.LifecycleResumeEffect(state.currentSessionId) {
         SessionAttentionStore.setViewing(
             sessionAttentionScopeKey(AuthManager.currentDataScope()),

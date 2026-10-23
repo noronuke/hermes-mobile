@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -120,7 +121,8 @@ fun ReasoningCard(
         shape = RoundedCornerShape(12.dp),
     ) {
         Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            // Fourche noronuke : en-tête de hauteur fixe, pour que tous les blocs repliés aient la même épaisseur.
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.height(24.dp)) {
                 Text(
                     text = "🧠",
                     fontSize = 14.sp,

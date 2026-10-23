@@ -59,6 +59,12 @@ object NavigationController {
 
     val pendingSessionId: String? get() = pendingChatNavigation?.sessionId
 
+    /**
+     * Fourche noronuke : vrai quand l'écran de conversation montre une conversation déjà enregistrée (pas une
+     * conversation neuve et vide). Tenu par ChatScreen ; décide où mène le retour (la liste ou la sortie).
+     */
+    var chatSessionOpen: Boolean by mutableStateOf(false)
+
     private var nextChatNavigationRequestId = 0L
     private var nextNewChatNavigationRequestId = 0L
 
