@@ -469,25 +469,6 @@ private fun NavigationDrawerBody(
             }
     }
 
-    Spacer(modifier = Modifier.height(8.dp))
-    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-    Spacer(modifier = Modifier.height(12.dp))
-    FilledTonalButton(
-        onClick = {
-            onItemClick()
-            runCatching {
-                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(KO_FI_URL)))
-            }
-        },
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-    ) {
-        Icon(
-            Icons.Filled.Favorite,
-            contentDescription = null,
-            modifier = Modifier.size(ButtonDefaults.IconSize),
-        )
-        Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
-        Text(stringResource(R.string.nav_drawer_support))
-    }
+    // Fourche noronuke : bouton de don retiré.
     Spacer(modifier = Modifier.height(12.dp))
 }

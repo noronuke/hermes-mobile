@@ -383,6 +383,8 @@ internal fun ChatSection(
             }
         }
 
+        // Fourche noronuke : statistiques, jetons, fournisseur et effet de frappe masqués.
+        if (com.m57.hermescontrol.Allegement.reglagesCosmetiques) {
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
@@ -522,6 +524,7 @@ internal fun ChatSection(
                     )
                 }
             }
+        }
         }
     }
 }

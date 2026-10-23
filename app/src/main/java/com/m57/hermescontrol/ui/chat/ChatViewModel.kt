@@ -5510,7 +5510,8 @@ class ChatViewModel(
     fun refreshSettings() {
         _uiState.update { state ->
             state.copy(
-                typingEffectEnabled = AuthManager.isTypingEffectEnabled(),
+                // Fourche noronuke : pas d'effet de frappe artificiel, le texte arrive tel qu'il s'écrit.
+                typingEffectEnabled = com.m57.hermescontrol.Allegement.reglagesCosmetiques && AuthManager.isTypingEffectEnabled(),
                 busySendMode = AuthManager.getBusySendMode(),
                 typingEffectDelayMs = AuthManager.getTypingEffectDelayMs(),
                 messageStatsEnabled = AuthManager.isMessageStatsEnabled(),

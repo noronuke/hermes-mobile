@@ -94,14 +94,15 @@ fun SessionLiveStatusIndicator(
  */
 internal fun SessionLiveStatus.badgeType(): StatusBadgeType =
     when (this) {
-        SessionLiveStatus.WORKING -> StatusBadgeType.SUCCESS
+        // Fourche noronuke : comme l'appli de bureau, bleu pendant la réflexion, vert une fois fini.
+        SessionLiveStatus.WORKING -> StatusBadgeType.INFO
 
         SessionLiveStatus.WAITING,
         SessionLiveStatus.WAITING_APPROVAL,
         SessionLiveStatus.WAITING_CLARIFY,
         -> StatusBadgeType.WARNING
 
-        SessionLiveStatus.DONE -> StatusBadgeType.INFO
+        SessionLiveStatus.DONE -> StatusBadgeType.SUCCESS
 
         SessionLiveStatus.FAILED -> StatusBadgeType.ERROR
     }

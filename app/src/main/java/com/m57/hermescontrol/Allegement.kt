@@ -20,5 +20,8 @@ object Allegement {
             WebhooksScreen, BotsScreen,
         )
 
+    /** Réglages cosmétiques de la conversation (statistiques, effet de frappe) : masqués. */
+    val reglagesCosmetiques: Boolean = false
+
     fun permet(key: NavKey): Boolean = key !in interdits
 }

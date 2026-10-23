@@ -143,7 +143,6 @@ fun SettingsScreen(
                         ),
                     ),
             )
-            SupportSection()
         }
     }
 }
