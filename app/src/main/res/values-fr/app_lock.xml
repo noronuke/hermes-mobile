@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_lock_title">Verrouillage de l\'appli</string>
+    <string name="app_lock_prompt">Vérifiez votre identité pour continuer</string>
+    <string name="app_lock_locked">Hermes est verrouillé. Votre écran actuel et votre travail non envoyé sont conservés.</string>
+    <string name="app_lock_unlock">Déverrouiller</string>
+    <string name="app_lock_unavailable">Un code PIN, un schéma ou un mot de passe de l\'appareil est requis. Rétablissez la sécurité de l\'appareil pour déverrouiller Hermes.</string>
+    <string name="app_lock_security_settings">Ouvrir les réglages de sécurité Android</string>
+    <string name="app_lock_auth_cancelled">L\'authentification a été annulée ou a échoué. Réessayez.</string>
+    <string name="app_lock_storage_error">Impossible d\'enregistrer les réglages de verrouillage. Le verrouillage n\'a pas été désactivé. Réessayez.</string>
+    <string name="app_lock_description">Verrouillage au démarrage à froid et après le délai d\'arrière-plan. L\'extinction de l\'écran verrouille toujours. Les captures d\'écran et les aperçus des applis récentes sont masqués.</string>
+    <string name="app_lock_notifications">Les aperçus de notification sont un réglage de confidentialité distinct. Les réponses en ligne sont désactivées lorsque le verrouillage de l\'appli est activé ; ouvrez et déverrouillez Hermes pour répondre.</string>
+    <string name="app_lock_timeout">Verrouillage après arrière-plan : %1$s</string>
+    <string name="app_lock_immediately">Immédiatement</string>
+    <string name="app_lock_30_seconds">30 secondes</string>
+    <string name="app_lock_1_minute">1 minute</string>
+    <string name="app_lock_5_minutes">5 minutes</string>
+</resources>

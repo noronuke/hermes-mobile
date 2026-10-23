@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chat_pending_delivery_unverified">Livraison non vérifiée : cela ne signifie pas que le travail est toujours en cours. Vérifiez la livraison avant de réessayer pour éviter les messages en double.</string>
+    <string name="chat_pending_unknown_released">Non vérifié · acquitté localement</string>
+    <string name="chat_pending_continue_queue">Acquitter sans renvoyer</string>
+    <string name="chat_pending_continue_title">Acquitter cet envoi non vérifié ?</string>
+    <string name="chat_pending_continue_warning">Cela permet la suppression facultative de cette entrée en attente locale. Cela ne confirme pas la livraison, ne renvoie pas ce message et ne supprime pas la conversation ni ses pièces jointes. Les nouveaux messages peuvent déjà être envoyés sans acquitter cette entrée.</string>
+    <string name="chat_pending_continue_confirm">Acquitter l\'entrée</string>
+    <string name="chat_pending_remove">Retirer de la liste d\'attente</string>
+    <string name="chat_pending_remove_title">Retirer ce message en attente ?</string>
+    <string name="chat_pending_remove_warning">Cela supprime uniquement l\'entrée en attente locale. Cela ne confirme pas la livraison et ne supprime pas la conversation ni ses pièces jointes. Ce message ne sera pas renvoyé. Vous ne pourrez plus le réessayer depuis ce panneau.</string>
+    <string name="chat_pending_remove_confirm">Retirer</string>
+    <string name="chat_pending_remove_failed">Impossible de retirer l\'entrée en attente. Elle a été conservée ; réessayez.</string>
+    <string name="chat_pending_acknowledge_failed">Impossible d\'acquitter l\'entrée en attente. Elle a été conservée ; réessayez.</string>
+</resources>

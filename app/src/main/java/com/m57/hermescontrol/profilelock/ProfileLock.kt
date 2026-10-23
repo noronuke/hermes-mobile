@@ -165,7 +165,8 @@ object ProfileLock {
         }
 
     /** Whether [key] may be shown or navigated to now. */
-    fun allows(key: NavKey): Boolean = !isLocked || key in allowedWhileLocked
+    fun allows(key: NavKey): Boolean =
+        com.m57.hermescontrol.Allegement.permet(key) && (!isLocked || key in allowedWhileLocked)
 
     /** Whether the active server-side profile may become [name]. */
     fun allowsActiveProfile(name: String?): Boolean {

@@ -31,6 +31,7 @@ import com.m57.hermescontrol.util.LocaleContextWrapper
 internal fun supportedLanguages(): List<Pair<String, String>> =
     listOf(
         LocaleContextWrapper.SYSTEM_LANGUAGE to stringResource(R.string.language_system),
+        "fr" to stringResource(R.string.language_french),
         "en" to stringResource(R.string.language_english),
         "ar" to stringResource(R.string.language_arabic),
         "zh" to stringResource(R.string.language_chinese),

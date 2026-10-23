@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tls_mtls_title">Configuration TLS et mTLS</string>
+    <string name="tls_mtls_help">TLS restreint l\'autorité de certification (AC) autorisée à authentifier un serveur. mTLS sélectionne votre identité client. Les deux peuvent être configurés pour le même nom d\'hôte et le même port HTTPS.</string>
+    <string name="tls_mtls_type">Type de configuration</string>
+    <string name="tls_mtls_delete_help">Supprimer la configuration %2$s pour %1$s ? Cela ne supprime pas le certificat Android.</string>
+    <string name="tls_restriction_help">Le serveur doit former une chaîne vers l\'AC sélectionnée, qui doit être autorisée par le réglage global de confiance actif. Sélectionner une AC utilisateur n\'active pas l\'option Faire confiance aux AC installées par l\'utilisateur. Sans configuration TLS, la confiance globale s\'applique. Les modifications de configuration s\'appliquent immédiatement.</string>
+    <string name="tls_ca_certificate">Restriction d\'AC serveur</string>
+    <string name="tls_ca_picker">Sélectionner une AC Android</string>
+    <string name="tls_ca_system">Système</string>
+    <string name="tls_ca_user">Utilisateur</string>
+    <string name="tls_ca_details">Détails du certificat AC</string>
+    <string name="tls_ca_source">Source : %1$s</string>
+    <string name="tls_ca_subject">Sujet : %1$s</string>
+    <string name="tls_ca_issuer">Émetteur : %1$s</string>
+    <string name="tls_ca_validity">Valide du %1$s au %2$s</string>
+    <string name="tls_ca_fingerprint">SHA-256 : %1$s</string>
+    <string name="tls_ca_empty">Aucun certificat AC dans cette source.</string>
+    <string name="tls_ca_load_error">Impossible de lire le magasin d\'AC Android. Rouvrez le sélecteur et réessayez.</string>
+    <string name="tls_ca_loading">Lecture du magasin d\'AC Android…</string>
+    <string name="tls_type_tls">TLS : restriction d\'AC serveur</string>
+    <string name="tls_type_mtls">mTLS : identité client</string>
+</resources>

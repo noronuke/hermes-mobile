@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chat_reply_failed_title">Hermes n\'a pas pu terminer cette réponse</string>
+    <string name="chat_reply_failed_description">Une erreur est survenue pendant la réponse d\'Hermes. Ouvrez les détails ou les journaux pour comprendre ce qui s\'est passé.</string>
+    <string name="chat_reply_failed_details">Détails</string>
+    <string name="chat_reply_failed_details_collapsed">Réduit</string>
+    <string name="chat_reply_failed_details_expanded">Développé</string>
+    <string name="chat_reply_failed_copy">Copier les détails de l\'erreur</string>
+    <string name="chat_reply_failed_logs">Ouvrir les journaux</string>
+    <string name="chat_reply_failed_share">Partager les diagnostics</string>
+    <string name="chat_reply_failed_share_note">Vérifiez les détails avant de partager. Les diagnostics incluent cette erreur et la version de l\'appli, pas votre conversation ni vos pièces jointes.</string>
+    <string name="chat_reply_failed_dismiss">Ignorer l\'erreur</string>
+
+    <string name="chat_reply_failed_copied">Détails de l\'erreur copiés</string>
+    <string name="chat_reply_failed_share_unavailable">Aucune appli disponible pour partager les diagnostics</string>
+</resources>

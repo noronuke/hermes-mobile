@@ -42,7 +42,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalConfiguration
@@ -56,8 +55,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.m57.hermescontrol.R
 import com.m57.hermescontrol.data.model.Attachment
-import com.m57.hermescontrol.theme.DarkOnSurface
-import com.m57.hermescontrol.theme.LightOnSurface
 import com.m57.hermescontrol.theme.LocalHermesStatusColors
 import com.m57.hermescontrol.ui.chat.components.rememberCopyFeedback
 import com.m57.hermescontrol.ui.chat.tool.ToolJson
@@ -142,33 +139,16 @@ fun UserBubble(
                     .padding(horizontal = 8.dp, vertical = 2.dp),
             contentAlignment = Alignment.CenterEnd,
         ) {
-            val primary = MaterialTheme.colorScheme.primary
-            val userBubbleTextColor =
-                if (primary.luminance() > 0.5f) {
-                    if (MaterialTheme.colorScheme.onPrimary.luminance() < 0.5f) {
-                        MaterialTheme.colorScheme.onPrimary
-                    } else {
-                        LightOnSurface
-                    }
-                } else {
-                    if (MaterialTheme.colorScheme.onPrimary.luminance() > 0.5f) {
-                        MaterialTheme.colorScheme.onPrimary
-                    } else {
-                        DarkOnSurface
-                    }
-                }
+            // Fourche noronuke : bulle neutre (surface) plutôt qu'accentuée, comme l'appli Claude.
+            val primary = MaterialTheme.colorScheme.surfaceContainerHigh
+            val userBubbleTextColor = MaterialTheme.colorScheme.onSurface
             Box {
                 Surface(
                     modifier =
                         Modifier
                             .widthIn(max = maxBubbleWidth)
                             .clip(
-                                RoundedCornerShape(
-                                    topStart = 16.dp,
-                                    topEnd = 16.dp,
-                                    bottomStart = 16.dp,
-                                    bottomEnd = 4.dp,
-                                ),
+                                RoundedCornerShape(18.dp),
                             ).background(color = primary)
                             .testTag("chat_bubble_user"),
                     color = Color.Transparent,

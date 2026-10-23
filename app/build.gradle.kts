@@ -19,7 +19,7 @@ android {
     compileSdk = 37
     buildToolsVersion = "37.0.0"
     defaultConfig {
-        applicationId = "com.m57.hermescontrol"
+        applicationId = "com.noronuke.hermes"
         minSdk = 26
         targetSdk = 37
         // Version overrides passed from CI via -PversionName / -PversionCode

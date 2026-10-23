@@ -116,14 +116,31 @@ internal fun FullBleedAgentMessage(
             when (segment) {
                 is MessageSegment.Text -> {
                     SelectionContainer {
-                        MarkdownText(
-                            text = segment.text,
-                            textColor = textColor,
-                            isStreaming = message.isStreaming,
-                            searchQuery = searchQuery,
-                            isCurrentMatch = isCurrentMatch,
-                            onImageClick = onImageClick,
-                        )
+                        // Fourche noronuke : prose des réponses en police à empattements.
+                        val base = MaterialTheme.typography
+                        val serif = androidx.compose.ui.text.font.FontFamily.Serif
+                        MaterialTheme(
+                            colorScheme = MaterialTheme.colorScheme,
+                            shapes = MaterialTheme.shapes,
+                            typography =
+                                base.copy(
+                                    bodyLarge = base.bodyLarge.copy(fontFamily = serif),
+                                    bodyMedium = base.bodyMedium.copy(fontFamily = serif),
+                                    bodySmall = base.bodySmall.copy(fontFamily = serif),
+                                    titleLarge = base.titleLarge.copy(fontFamily = serif),
+                                    titleMedium = base.titleMedium.copy(fontFamily = serif),
+                                    titleSmall = base.titleSmall.copy(fontFamily = serif),
+                                ),
+                        ) {
+                            MarkdownText(
+                                text = segment.text,
+                                textColor = textColor,
+                                isStreaming = message.isStreaming,
+                                searchQuery = searchQuery,
+                                isCurrentMatch = isCurrentMatch,
+                                onImageClick = onImageClick,
+                            )
+                        }
                     }
                 }
 

@@ -6,51 +6,48 @@ import com.m57.hermescontrol.theme.PaletteColors
 import com.m57.hermescontrol.theme.buildTheme
 
 // ---------------------------------------------------------------------
-// Slate Dark — named swatches
+// Fourche noronuke : palette « Argile », dans l'esprit de l'appli Claude
+// (fond crème ou brun chaud, accent terre cuite). Contrastes mesurés :
+// texte >= 13:1, accent sur fond >= 5,1:1 en clair et 5,8:1 en sombre.
+// Les noms Slate* sont gardés pour limiter l'écart avec l'amont.
 // ---------------------------------------------------------------------
 
-private val SlateDarkBg0 = Color(0xFF0F1416)
-private val SlateDarkBg1 = Color(0xFF171C1E)
-private val SlateDarkBg2 = Color(0xFF1B2022)
-private val SlateDarkBg3 = Color(0xFF252B2D)
-private val SlateDarkBg4 = Color(0xFF303638)
-private val SlateDarkFg1 = Color(0xFFDEE3E5)
-private val SlateDarkFg2 = Color(0xFFCEE7EC)
-private val SlateDarkFg3 = Color(0xFFBEC8CA)
-private val SlateGray = Color(0xFF889294) // same neutral gray in both modes
+private val SlateDarkBg0 = Color(0xFF262624)
+private val SlateDarkBg1 = Color(0xFF2B2B29)
+private val SlateDarkBg2 = Color(0xFF30302E)
+private val SlateDarkBg3 = Color(0xFF3A3A37)
+private val SlateDarkBg4 = Color(0xFF454540)
+private val SlateDarkFg1 = Color(0xFFF5F4EE)
+private val SlateDarkFg2 = Color(0xFFECEAE0)
+private val SlateDarkFg3 = Color(0xFFC2C0B6)
+private val SlateGray = Color(0xFF9A988F)
 
-// "Bright" accents — high-visibility variants against dark surfaces.
-private val SlateBrightTeal = Color(0xFF80D5D2)
-private val SlateBrightBlue = Color(0xFFA3C9EC)
-private val SlateBrightCyan = Color(0xFFB2CBD0)
-private val SlateBrightGreen = Color(0xFF81D692)
-private val SlateBrightYellow = Color(0xFFECC248)
-private val SlateBrightRed = Color(0xFFFFB4AB)
-private val SlateBrightInfo = Color(0xFF8ECEFF)
+private val SlateBrightTeal = Color(0xFFE08B6A) // terre cuite claire (accent sombre)
+private val SlateBrightBlue = Color(0xFFD9A98C)
+private val SlateBrightCyan = Color(0xFFD6CFC0)
+private val SlateBrightGreen = Color(0xFF8FCB8F)
+private val SlateBrightYellow = Color(0xFFE3C065)
+private val SlateBrightRed = Color(0xFFF2A49B)
+private val SlateBrightInfo = Color(0xFF9CC4EA)
 
-// ---------------------------------------------------------------------
-// Slate Light — named swatches
-// ---------------------------------------------------------------------
+private val SlateLightBg0 = Color(0xFFFAF9F5)
+private val SlateLightBg1 = Color(0xFFF5F4ED)
+private val SlateLightBg2 = Color(0xFFF0EEE6)
+private val SlateLightBg3 = Color(0xFFE8E6DC)
+private val SlateLightBg4 = Color(0xFFDEDCD1)
+private val SlateLightFg1 = Color(0xFF141413)
+private val SlateLightFg2 = Color(0xFF29261B)
+private val SlateLightFg3 = Color(0xFF5E5D59)
 
-private val SlateLightBg0 = Color(0xFFF5FAFC)
-private val SlateLightBg1 = Color(0xFFEFF4F6)
-private val SlateLightBg2 = Color(0xFFE9EEF0)
-private val SlateLightBg3 = Color(0xFFE3E8EA)
-private val SlateLightBg4 = Color(0xFFDEE3E5)
-private val SlateLightFg1 = Color(0xFF171C1E)
-private val SlateLightFg2 = Color(0xFF051F23)
-private val SlateLightFg3 = Color(0xFF3F484A)
+private val SlateFadedTeal = Color(0xFFA9502C) // terre cuite (accent clair)
+private val SlateFadedBlue = Color(0xFF8A4F33)
+private val SlateFadedCyan = Color(0xFF6B5E4E)
+private val SlateFadedGreen = Color(0xFF2E6B31)
+private val SlateFadedYellow = Color(0xFF7A5A00)
+private val SlateFadedRed = Color(0xFFB3261E)
+private val SlateFadedInfo = Color(0xFF2F5F8A)
 
-// "Faded" accents — muted variants for light background contrast.
-private val SlateFadedTeal = Color(0xFF006A68)
-private val SlateFadedBlue = Color(0xFF3B6184)
-private val SlateFadedCyan = Color(0xFF4A6367)
-private val SlateFadedGreen = Color(0xFF126D2B)
-private val SlateFadedYellow = Color(0xFF725C00)
-private val SlateFadedRed = Color(0xFFBA1A1A)
-private val SlateFadedInfo = Color(0xFF006393)
-
-/** Default theme (Slate) — modern slate blues with teal accent notes. */
+/** Thème par défaut de la fourche : « Argile », crème et terre cuite. */
 val DefaultTheme =
     buildTheme(
         dark =

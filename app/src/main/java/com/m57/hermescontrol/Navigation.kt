@@ -442,25 +442,11 @@ private fun NavigationDrawerBody(
 
     // #1643: a profile lock keeps only its allowed destinations; drop now-empty section headers too.
     val lockState by ProfileLock.state.collectAsState()
-    for (section in DrawerSection.entries) {
+    // Fourche noronuke : liste plate et courte (voir Allegement), sans titres de section.
+    run {
         val entries =
-            ScreenRegistry.ALL_SCREENS.filter {
-                it.drawerSection == section && hasToken && (!lockState.locked || ProfileLock.allows(it.key))
-            }
-        if (entries.isEmpty()) continue
-        Text(
-            text = stringResource(section.titleRes).uppercase(),
-            modifier =
-                Modifier.padding(
-                    start = 16.dp,
-                    top = 8.dp,
-                    bottom = 4.dp,
-                    end = 16.dp,
-                ),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontWeight = FontWeight.SemiBold,
-        )
+            Allegement.dansLeMenu.mapNotNull { key -> ScreenRegistry.ALL_SCREENS.firstOrNull { it.key == key } }
+                .filter { hasToken && (!lockState.locked || ProfileLock.allows(it.key)) }
         entries
             .forEach { entry ->
                 NavigationDrawerItem(

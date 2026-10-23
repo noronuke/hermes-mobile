@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chat_image_paste_loading">Ajout des images collées…</string>
+    <string name="chat_image_paste_failed">Impossible de coller l\'image. Vérifiez l\'accès et réessayez.</string>
+    <string name="chat_image_paste_too_large">L\'image dépasse la limite de 10 Mo par pièce jointe.</string>
+    <string name="chat_image_paste_batch_limit">Collez jusqu\'à 8 images pour un total de 20 Mo maximum.</string>
+    <string name="chat_image_paste_busy">Attendez la fin du chargement des images avant de coller à nouveau.</string>
+</resources>
