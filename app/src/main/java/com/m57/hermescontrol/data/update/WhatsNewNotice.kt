@@ -23,6 +23,7 @@ object WhatsNewNotice {
         checker: AppUpdateChecker = AppUpdateChecker(),
         currentVersion: String = BuildConfig.VERSION_NAME,
     ) {
+        if (UpdateNoticeManager.FOURCHE_SANS_VERIF_AMONT) return
         if (!UpdateNoticeManager.enabled || release != null) return
         val lastSeen = AuthManager.getLastSeenVersion()
         if (lastSeen == currentVersion) return

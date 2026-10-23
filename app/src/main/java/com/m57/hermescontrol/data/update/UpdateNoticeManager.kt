@@ -41,6 +41,7 @@ object UpdateNoticeManager {
         internal set
 
     /** Avoid duplicate foreground checks in one process; a cold launch always rechecks. */
+    const val FOURCHE_SANS_VERIF_AMONT: Boolean = true
     const val CHECK_INTERVAL_MS: Long = 5 * 60 * 1000L
     const val FAILURE_BACKOFF_MS: Long = 30 * 1000L
 
@@ -52,6 +53,9 @@ object UpdateNoticeManager {
         now: Long = System.currentTimeMillis(),
         force: Boolean = false,
     ) {
+        // Fourche noronuke : les mises à jour arrivent par Obtainium (dépôt noronuke/hermes-mobile) ;
+        // la vérification d'origine interroge l'amont, dont l'APK est signé par une autre clé.
+        if (FOURCHE_SANS_VERIF_AMONT) return
         if (!enabled && !force) return
         synchronized(checkLock) {
             if (activeCheck?.isActive == true) return
