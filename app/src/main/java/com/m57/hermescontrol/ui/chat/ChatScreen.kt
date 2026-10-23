@@ -215,7 +215,13 @@ fun ChatScreen(
             sessionAttentionScopeKey(AuthManager.currentDataScope()),
             state.currentSessionId,
         )
-        onPauseOrDispose { SessionAttentionStore.setViewing(null, null) }
+        val vue = state.currentSessionId
+        com.m57.hermescontrol.data.session.SessionReadMarker.marquerLue(vue)
+        onPauseOrDispose {
+            SessionAttentionStore.setViewing(null, null)
+            // Fourche noronuke : quitter une conversation la marque lue jusqu'à maintenant.
+            com.m57.hermescontrol.data.session.SessionReadMarker.marquerLue(vue)
+        }
     }
     // Snapshot-backed search state — read directly so only the scopes that
     // read its fields recompose on search changes (bar, matched bubbles).

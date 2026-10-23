@@ -92,6 +92,7 @@ data class SessionInfo(
     val last_activity_at: Double? = null,
     val last_activity_description: String? = null,
     val unread: Boolean? = null,
+    val last_read_at: Double? = null,
     // Original root id when this row is a compression-projected tip. Branch
     // children reference the ROOT id in parent_session_id, so tree building
     // must alias this id to this row (desktop byVisibleId parity).
@@ -135,6 +136,8 @@ data class SessionRenameRequest(
     val pinned: Boolean? = null,
     val hidden: Boolean? = null,
     val archived: Boolean? = null,
+    // Fourche noronuke : filigrane de lecture partagé (false = lu jusqu'à maintenant).
+    val unread: Boolean? = null,
     // Mutation identity, as for DELETE: current backends refuse an unfenced PATCH
     // (409 client_upgrade_required). Omitted on older backends, which accept that.
     @SerialName("request_id") val requestId: String? = null,

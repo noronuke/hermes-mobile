@@ -1934,10 +1934,26 @@ internal fun sharedStatusOf(row: SessionInfo): SessionLiveStatus? {
             at != null && System.currentTimeMillis() / 1000.0 - at < SHARED_ACTIVITY_FRESH_S
     return when {
         working -> SessionLiveStatus.WORKING
-        row.unread == true -> SessionLiveStatus.DONE
+        nonLue(row) -> SessionLiveStatus.DONE
         else -> null
     }
 }
 
 /** Un tour vivant rafraîchit sa description d'activité bien plus souvent que ça. */
 private const val SHARED_ACTIVITY_FRESH_S = 180.0
+
+/**
+ * Fourche noronuke : fini et pas encore lu. Le serveur ne dit « unread » que pour une conversation
+ * déjà lue une fois (filigrane présent) ; sans filigrane, toute activité postérieure à la mise en
+ * service compte aussi comme non lue. Une lecture faite sur ce téléphone l'emporte aussitôt.
+ */
+private fun nonLue(row: SessionInfo): Boolean {
+    val actif = row.last_active ?: row.started_at ?: return false
+    val lueIci = com.m57.hermescontrol.data.session.SessionReadMarker.lueLocalementA(row.id)
+    val filigrane = listOfNotNull(row.last_read_at, lueIci).maxOrNull()
+    return if (filigrane != null) {
+        actif > filigrane
+    } else {
+        row.unread == true || actif > com.m57.hermescontrol.data.session.SessionReadMarker.DEPUIS_S
+    }
+}
