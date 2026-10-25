@@ -16,6 +16,9 @@ android {
     lint {
         disable += "MissingTranslation"
     }
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
     compileSdk = 37
     buildToolsVersion = "37.0.0"
     defaultConfig {
@@ -223,6 +226,10 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.turbine)
+    // Essai seulement : rendu hors appareil des écrans pour les captures (branche essai/captures).
+    testImplementation(composeBom)
+    testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation("org.robolectric:robolectric:4.14.1")
 
     // Instrumented tests: jUnit rules and runners
     androidTestImplementation(libs.androidx.test.core)
