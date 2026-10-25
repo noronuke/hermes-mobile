@@ -64,6 +64,23 @@ jobs:
               print(f"  - ÉCHEC {n}")
           PY
 
+      - name: Captures hors appareil (Robolectric)
+        id: captures
+        if: hashFiles('app/src/test/java/com/m57/hermescontrol/fourche/CapturesFourcheTest.kt') != ''
+        continue-on-error: true
+        env:
+          CAPTURES_FOURCHE: "1"
+        run: ./gradlew --no-daemon testDebugUnitTest --tests 'com.m57.hermescontrol.fourche.*' --rerun
+
+      - name: Envoi des captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: captures-${{ github.run_number }}
+          path: app/build/captures-fourche/
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Rapport des tests
         if: always()
         uses: actions/upload-artifact@v4
