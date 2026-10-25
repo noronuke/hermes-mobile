@@ -29,6 +29,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Psychology
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Card
@@ -125,9 +126,12 @@ fun ReasoningCard(
         Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
             // Fourche noronuke : en-tête de hauteur fixe, pour que tous les blocs repliés aient la même épaisseur.
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.height(24.dp)) {
-                Text(
-                    text = "🧠",
-                    fontSize = 14.sp,
+                // Fourche noronuke : icône au trait de la même famille que le reste, plus d'émoji.
+                Icon(
+                    imageVector = androidx.compose.material.icons.Icons.Outlined.Psychology,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(18.dp),
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
