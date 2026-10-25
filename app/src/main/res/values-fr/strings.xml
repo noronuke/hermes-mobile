@@ -2035,4 +2035,16 @@
     <string name="profile_lock_disabled_toast">Le verrouillage du profil est désactivé</string>
     <string name="profile_lock_connection_blocked">Le verrouillage du profil est activé. Cette requête nécessite des identifiants, le propriétaire doit donc d\'abord désactiver le verrouillage.</string>
     <string name="profile_lock_landing_body">L\'identification et les connexions au serveur sont verrouillées. Le propriétaire peut désactiver le verrouillage pour se reconnecter.</string>
+    <!-- Fourche noronuke : libellés jusque-là écrits en dur (refonte visuelle du 25/10/2026). -->
+    <string name="fourche_label_model">Modèle</string>
+    <string name="fourche_label_no_reasoning">Sans raisonnement</string>
+    <string name="fourche_label_mic">Micro</string>
+    <string name="fourche_label_stop_listening">Arrêter l\'écoute</string>
+    <string name="fourche_pinned_count">Épinglées (%1$d)</string>
+    <string name="fourche_pinned_collapse">Replier les conversations épinglées</string>
+    <string name="fourche_pinned_expand">Déplier les conversations épinglées</string>
+    <string name="fourche_history_header">Récentes</string>
+    <string name="fourche_model_pinned">Épinglés</string>
+    <string name="fourche_session_created">Conversation ouverte</string>
+    <string name="fourche_session_branched">Conversation dérivée</string>
 </resources>

@@ -49,7 +49,11 @@ fun SessionLiveStatusIndicator(
     val badgeType = liveStatus.badgeType()
     val (textRes, descRes) = liveStatus.labels()
 
-    val (bgColor, fgColor) = requireNotNull(statusBadgeColors(badgeType, statusColors))
+    // Fourche noronuke : étiquette discrète en puce ronde, teinte légère de la couleur d'état
+    // (le fond plein criait à côté de la pastille, qui dit déjà la même chose). Le texte garde
+    // l'encre de la carte ; seule l'icône porte la couleur, pour un contraste AA sûr.
+    val (fill, _) = requireNotNull(statusBadgeColors(badgeType, statusColors))
+    val ink = MaterialTheme.colorScheme.onSurface
     val text = stringResource(textRes)
     val description = stringResource(descRes)
 
@@ -58,37 +62,37 @@ fun SessionLiveStatusIndicator(
             modifier
                 .testTag("session_live_status_$sessionId")
                 .semantics { contentDescription = description },
-        shape = RoundedCornerShape(8.dp),
-        color = bgColor,
+        shape = com.m57.hermescontrol.theme.Formes.Puce,
+        color = fill.copy(alpha = 0.12f),
     ) {
         Row(
             modifier =
                 Modifier.padding(
-                    horizontal = spacing.sm,
-                    vertical = 2.dp,
+                    horizontal = spacing.sm + 4.dp,
+                    vertical = 3.dp,
                 ),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
         ) {
             if (liveStatus == SessionLiveStatus.WORKING) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(10.dp),
                     strokeWidth = 1.5.dp,
-                    color = fgColor,
+                    color = fill,
                 )
             } else {
                 Icon(
                     imageVector = liveStatus.icon(),
                     contentDescription = null,
-                    tint = fgColor,
+                    tint = fill,
                     modifier = Modifier.size(12.dp),
                 )
             }
             Text(
                 text = text,
                 style = MaterialTheme.typography.labelSmall,
-                color = fgColor,
-                fontWeight = FontWeight.SemiBold,
+                color = ink,
+                fontWeight = FontWeight.Medium,
             )
         }
     }
@@ -186,20 +190,21 @@ internal fun SessionStatusDot(
             modifier =
                 modifier
                     .testTag("session_status_dot_$sessionId")
-                    .size(8.dp)
+                    .size(10.dp)
                     .graphicsLayer { this.alpha = alpha }
-                    .border(1.5.dp, grey, CircleShape),
+                    .border(2.dp, grey, CircleShape),
         )
         return
     }
+    // Fourche noronuke : pastille de 10 dp ; au repos, gris sauge adouci (l'ancien filet était invisible).
     val color =
         liveStatus?.let { statusBadgeColors(it.badgeType(), statusColors)?.first }
-            ?: androidx.compose.material3.MaterialTheme.colorScheme.outlineVariant
+            ?: androidx.compose.material3.MaterialTheme.colorScheme.outline.copy(alpha = 0.55f)
     androidx.compose.foundation.layout.Box(
         modifier =
             modifier
                 .testTag("session_status_dot_$sessionId")
-                .size(8.dp)
+                .size(10.dp)
                 .background(color, CircleShape),
     )
 }

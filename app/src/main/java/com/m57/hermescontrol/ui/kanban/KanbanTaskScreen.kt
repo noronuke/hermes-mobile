@@ -411,7 +411,7 @@ private fun TaskOverviewTab(
                                 CardDefaults.cardColors(
                                     containerColor = statusColors.error.copy(alpha = 0.15f),
                                 ),
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.fillMaxWidth(),
                         ) {
                             Column(modifier = Modifier.padding(12.dp)) {
@@ -452,7 +452,7 @@ private fun TaskOverviewTab(
 
             // Metadata / Attributes card
             Card(
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(12.dp),
                 modifier =
                     Modifier
                         .fillMaxWidth()
@@ -539,7 +539,7 @@ private fun TaskOverviewTab(
             // Dependencies Section
             run {
                 Card(
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(12.dp),
                     modifier =
                         Modifier
                             .fillMaxWidth()
@@ -621,7 +621,7 @@ private fun TaskOverviewTab(
                 ) { Text(stringResource(R.string.kanban_specify_task)) }
             }
             Card(
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(12.dp),
                 modifier =
                     Modifier
                         .fillMaxWidth()
@@ -690,7 +690,7 @@ private fun TaskOverviewTab(
 
             // Description Section
             Card(
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(12.dp),
                 modifier =
                     Modifier
                         .fillMaxWidth()
@@ -754,7 +754,7 @@ private fun TaskOverviewTab(
             val summary = task.result ?: task.latestSummary
             if (!summary.isNullOrBlank()) {
                 Card(
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(12.dp),
                     modifier =
                         Modifier
                             .fillMaxWidth()

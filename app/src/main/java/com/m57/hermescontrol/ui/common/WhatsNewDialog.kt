@@ -48,7 +48,7 @@ fun WhatsNewDialog(
     val context = LocalContext.current
     Dialog(onDismissRequest = onDismiss) {
         Surface(
-            shape = RoundedCornerShape(20.dp),
+            shape = RoundedCornerShape(28.dp),
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 6.dp,
             modifier =
@@ -83,7 +83,7 @@ fun WhatsNewDialog(
                         Modifier
                             .fillMaxWidth()
                             .heightIn(max = 320.dp)
-                            .clip(RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(12.dp))
                             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                             .padding(12.dp)
                             .verticalScroll(rememberScrollState()),
@@ -102,7 +102,7 @@ fun WhatsNewDialog(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(12.dp),
                 ) {
                     Icon(
                         imageVector = Icons.Default.Favorite,

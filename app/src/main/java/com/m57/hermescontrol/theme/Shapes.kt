@@ -5,21 +5,42 @@ import androidx.compose.material3.Shapes
 import androidx.compose.ui.unit.dp
 
 /**
- * Unified shape system — aligned to 8 dp rhythm (4/8/12/16/28).
+ * Fourche noronuke : un seul rayon par famille (charte commune des applis, 26/10/2026).
  *
- * | Token        | Radius | Use case                              |
- * |--------------|--------|---------------------------------------|
- * | extraSmall   | 4 dp   | Chips, badges, inline toggles         |
- * | small        | 8 dp   | Text fields, small cards, small FAB   |
- * | medium       | 12 dp  | Standard cards, list rows, dialogs    |
- * | large        | 16 dp  | Large cards, bottom sheets, FAB       |
- * | extraLarge   | 28 dp  | Feature cards, full-bleed surfaces   |
+ * | Famille   | Rayon   | Usage                                                   |
+ * |-----------|---------|---------------------------------------------------------|
+ * | Fin       | 6 dp    | petits éléments en ligne (code, barres, vignettes)      |
+ * | Contrôle  | 12 dp   | champs, boutons carrés, menus, blocs dans une carte     |
+ * | Carte     | 16 dp   | cartes, encadrés, tiroir                                |
+ * | Bulle     | 20 dp   | bulles de message                                       |
+ * | Feuille   | 28 dp   | feuilles, dialogues, barre de saisie flottante          |
+ * | Puce      | rond    | puces, pastilles, boutons-icônes                        |
+ *
+ * Règle : jamais un élément arrondi posé dans un carré. Un élément intérieur prend la famille
+ * du dessous (ou une puce ronde), jamais un rayon plus grand que son contenant.
  */
+object Formes {
+    val Fin = RoundedCornerShape(6.dp)
+    val Controle = RoundedCornerShape(12.dp)
+    val Carte = RoundedCornerShape(16.dp)
+    val Bulle = RoundedCornerShape(20.dp)
+
+    /** Bulle envoyée : coin de départ en bas à droite, comme les messageries courantes. */
+    val BulleEnvoyee = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomEnd = 6.dp, bottomStart = 20.dp)
+    val Feuille = RoundedCornerShape(28.dp)
+    val Puce = RoundedCornerShape(50)
+}
+
 val HermesShapes =
     Shapes(
-        extraSmall = RoundedCornerShape(4.dp),
-        small = RoundedCornerShape(8.dp),
-        medium = RoundedCornerShape(12.dp),
-        large = RoundedCornerShape(16.dp),
-        extraLarge = RoundedCornerShape(28.dp),
+        // Champs de saisie, menus, infobulles.
+        extraSmall = Formes.Controle,
+        // Puces (AssistChip, FilterChip…) : pleines rondes.
+        small = Formes.Puce,
+        // Cartes.
+        medium = Formes.Carte,
+        // Tiroir, grandes cartes, bouton flottant.
+        large = Formes.Carte,
+        // Dialogues et feuilles.
+        extraLarge = Formes.Feuille,
     )

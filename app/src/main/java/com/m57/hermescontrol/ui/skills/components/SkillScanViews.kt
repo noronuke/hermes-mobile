@@ -74,7 +74,7 @@ fun SkillScanSection(
             scanError != null -> {
                 Surface(
                     color = LocalHermesStatusColors.current.errorContainer,
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(12.dp),
                 ) {
                     Text(
                         text = scanError,
@@ -229,7 +229,7 @@ fun ScanFindingRow(finding: SkillScanFinding) {
         ) {
             Surface(
                 color = severityColor.copy(alpha = 0.15f),
-                shape = RoundedCornerShape(4.dp),
+                shape = RoundedCornerShape(6.dp),
             ) {
                 Text(
                     text = finding.severity,

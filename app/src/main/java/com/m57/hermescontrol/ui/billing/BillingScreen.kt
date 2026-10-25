@@ -276,7 +276,7 @@ private fun UsageBarRow(
                         .fillMaxWidth()
                         .padding(top = 8.dp)
                         .height(8.dp)
-                        .clip(RoundedCornerShape(4.dp)),
+                        .clip(RoundedCornerShape(6.dp)),
             )
         }
     }

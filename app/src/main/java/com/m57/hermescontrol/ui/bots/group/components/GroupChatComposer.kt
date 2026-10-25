@@ -133,7 +133,7 @@ fun GroupChatComposer(
                                 tint = MaterialTheme.colorScheme.primary,
                             )
                         },
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.testTag("mention_chip_all"),
                     )
                 }
@@ -159,7 +159,7 @@ fun GroupChatComposer(
                             showPresence = false,
                         )
                     },
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.testTag("mention_chip_${bot.name}"),
                 )
             }

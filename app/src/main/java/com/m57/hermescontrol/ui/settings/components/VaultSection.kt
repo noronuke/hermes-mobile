@@ -142,7 +142,7 @@ private fun VaultSourceRow(
                 Spacer(modifier = Modifier.width(8.dp))
                 if (source.name == "local") {
                     Surface(
-                        shape = RoundedCornerShape(4.dp),
+                        shape = RoundedCornerShape(6.dp),
                         color = LocalHermesStatusColors.current.success.copy(alpha = 0.15f),
                     ) {
                         Text(
@@ -154,7 +154,7 @@ private fun VaultSourceRow(
                     }
                 } else if (!source.installed) {
                     Surface(
-                        shape = RoundedCornerShape(4.dp),
+                        shape = RoundedCornerShape(6.dp),
                         color = MaterialTheme.colorScheme.surfaceVariant,
                     ) {
                         Text(
@@ -166,7 +166,7 @@ private fun VaultSourceRow(
                     }
                 } else if (source.unlocked) {
                     Surface(
-                        shape = RoundedCornerShape(4.dp),
+                        shape = RoundedCornerShape(6.dp),
                         color = LocalHermesStatusColors.current.success.copy(alpha = 0.15f),
                     ) {
                         Text(
@@ -178,7 +178,7 @@ private fun VaultSourceRow(
                     }
                 } else {
                     Surface(
-                        shape = RoundedCornerShape(4.dp),
+                        shape = RoundedCornerShape(6.dp),
                         color = MaterialTheme.colorScheme.errorContainer,
                     ) {
                         Text(
@@ -314,7 +314,7 @@ private fun VaultItemRow(item: VaultItem) {
             }
         }
         Surface(
-            shape = RoundedCornerShape(4.dp),
+            shape = RoundedCornerShape(6.dp),
             color = MaterialTheme.colorScheme.surfaceVariant,
         ) {
             Text(

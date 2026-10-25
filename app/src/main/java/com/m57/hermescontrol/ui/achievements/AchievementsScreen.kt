@@ -668,7 +668,7 @@ private fun AchievementCard(
                         Modifier
                             .fillMaxWidth()
                             .height(6.dp)
-                            .clip(RoundedCornerShape(3.dp)),
+                            .clip(RoundedCornerShape(6.dp)),
                     color = MaterialTheme.colorScheme.tertiary,
                     trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                 )
@@ -715,7 +715,7 @@ private fun AchievementCard(
                 ) {
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(12.dp),
                         color = MaterialTheme.colorScheme.surfaceContainerHigh,
                     ) {
                         Text(

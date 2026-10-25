@@ -228,7 +228,7 @@ private fun RestartBanner(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
     ) {
         Row(
             modifier =
@@ -271,7 +271,7 @@ private fun RestartBanner(
 private fun GatewayOfflineBanner(gatewayCommand: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
     ) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(12.dp),
@@ -293,7 +293,7 @@ private fun GatewayOfflineBanner(gatewayCommand: String) {
             Spacer(modifier = Modifier.height(8.dp))
             Surface(
                 color = LocalHermesStatusColors.current.warningContainer,
-                shape = RoundedCornerShape(4.dp),
+                shape = RoundedCornerShape(6.dp),
             ) {
                 Text(
                     text = "  $gatewayCommand",
@@ -424,7 +424,7 @@ internal fun ConfigureForm(
 private fun AdminSection(envPath: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
     ) {
         Column(
             modifier = Modifier.padding(16.dp),

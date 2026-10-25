@@ -49,11 +49,11 @@ fun CompactSearchInput(
                 .height(40.dp)
                 .background(
                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                    shape = RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(50),
                 ).border(
                     width = 1.dp,
                     color = outlineColor,
-                    shape = RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(50),
                 ).padding(horizontal = 12.dp),
         singleLine = true,
         textStyle = MaterialTheme.typography.bodyMedium.copy(color = textColor),

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Fourche noronuke : fond nuit dès l'ouverture, en thème sombre. -->
+    <style name="Theme.HermesControl" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/fourche_fond</item>
+    </style>
+</resources>

@@ -66,7 +66,7 @@ private fun SelfImprovementReviewCard(
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 4.dp)
                 .testTag("self_improvement_review_card"),
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(12.dp),
         colors =
             CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -119,8 +119,16 @@ internal fun SystemBubble(
                 .padding(horizontal = 16.dp, vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        // Fourche noronuke : les repères de début de conversation, envoyés en anglais par le serveur,
+        // s'affichent en français (seul l'affichage change, le contenu reste celui du serveur).
+        val shown =
+            when (message.content) {
+                "Session created" -> androidx.compose.ui.res.stringResource(com.m57.hermescontrol.R.string.fourche_session_created)
+                "Session branched" -> androidx.compose.ui.res.stringResource(com.m57.hermescontrol.R.string.fourche_session_branched)
+                else -> message.content
+            }
         Text(
-            text = message.content,
+            text = shown,
             style =
                 MaterialTheme.typography.bodySmall.copy(
                     fontStyle = FontStyle.Italic,

@@ -116,8 +116,10 @@ fun ReasoningCard(
                 ).testTag("reasoning_card"),
         colors =
             CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                // Fourche noronuke : bloc papier au filet fin, plutôt qu'un aplat foncé.
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
             ),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         shape = RoundedCornerShape(12.dp),
     ) {
         Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {

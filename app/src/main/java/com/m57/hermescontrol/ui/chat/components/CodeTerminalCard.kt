@@ -90,7 +90,7 @@ fun CodeTerminalCard(
             modifier
                 .fillMaxWidth()
                 .then(if (testTag != null) Modifier.testTag(testTag) else Modifier),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
         color = CodeTerminalBg,
         border = BorderStroke(1.dp, CodeTerminalBorder),
     ) {

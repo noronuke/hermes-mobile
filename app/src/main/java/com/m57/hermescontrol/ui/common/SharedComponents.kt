@@ -87,7 +87,8 @@ fun StatusBadge(
             ?: (MaterialTheme.colorScheme.surfaceContainerHigh to MaterialTheme.colorScheme.onSurfaceVariant)
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
+        // Fourche noronuke : étiquette d'état en puce pleine ronde.
+        shape = com.m57.hermescontrol.theme.Formes.Puce,
         color = bgColor,
     ) {
         Row(
@@ -208,15 +209,16 @@ fun SearchBar(
         modifier =
             modifier
                 .fillMaxWidth()
-                .height(40.dp)
+                // Fourche noronuke : pilule papier de 48 dp (cible tactile), filet fin.
+                .height(48.dp)
                 .background(
-                    color = MaterialTheme.colorScheme.surfaceContainer,
-                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                    shape = com.m57.hermescontrol.theme.Formes.Puce,
                 ).border(
                     width = 1.dp,
-                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-                    shape = RoundedCornerShape(12.dp),
-                ).padding(horizontal = 12.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                    shape = com.m57.hermescontrol.theme.Formes.Puce,
+                ).padding(horizontal = 16.dp),
         singleLine = true,
         textStyle = MaterialTheme.typography.bodyMedium.copy(color = textColor),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
@@ -236,7 +238,7 @@ fun SearchBar(
                         Text(
                             text = placeholder,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                     innerTextField()

@@ -123,7 +123,7 @@ fun PairingScreen(
                         item(key = "approved_empty") {
                             Card(
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(8.dp),
+                                shape = RoundedCornerShape(12.dp),
                             ) {
                                 Box(
                                     modifier = Modifier.fillMaxWidth().padding(24.dp),
@@ -205,7 +205,7 @@ private fun PendingCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
         colors =
             CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f),
@@ -275,7 +275,7 @@ private fun ApprovedCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(12.dp),

@@ -168,6 +168,7 @@ fun EmptyState(
     actionLabel: String? = null,
     onAction: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
+    illustration: androidx.compose.ui.graphics.painter.Painter? = null,
 ) {
     val spacing = LocalSpacing.current
     Column(
@@ -178,13 +179,23 @@ fun EmptyState(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-            modifier = Modifier.size(56.dp),
-        )
-        Spacer(modifier = Modifier.height(spacing.sm))
+        // Fourche noronuke : une illustration du site peut remplacer l'icône (écrans vides).
+        if (illustration != null) {
+            androidx.compose.foundation.Image(
+                painter = illustration,
+                contentDescription = null,
+                modifier = Modifier.size(width = 168.dp, height = 206.dp),
+            )
+            Spacer(modifier = Modifier.height(spacing.lg))
+        } else {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                modifier = Modifier.size(56.dp),
+            )
+            Spacer(modifier = Modifier.height(spacing.sm))
+        }
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
@@ -194,7 +205,7 @@ fun EmptyState(
             Spacer(modifier = Modifier.height(spacing.xs))
             Text(
                 text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
             )

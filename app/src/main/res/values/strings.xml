@@ -2035,4 +2035,16 @@
     <string name="profile_lock_disabled_toast">Profile lock is off</string>
     <string name="profile_lock_connection_blocked">Profile lock is on. This request needs credentials, so the owner must turn off the lock first.</string>
     <string name="profile_lock_landing_body">Sign-in and server connections are locked. The owner can turn off the lock to sign in again.</string>
+    <!-- Fourche noronuke : libellés jusque-là écrits en dur (refonte visuelle du 25/10/2026). -->
+    <string name="fourche_label_model">Model</string>
+    <string name="fourche_label_no_reasoning">No reasoning</string>
+    <string name="fourche_label_mic">Microphone</string>
+    <string name="fourche_label_stop_listening">Stop listening</string>
+    <string name="fourche_pinned_count">Pinned (%1$d)</string>
+    <string name="fourche_pinned_collapse">Collapse pinned conversations</string>
+    <string name="fourche_pinned_expand">Expand pinned conversations</string>
+    <string name="fourche_history_header">Recent</string>
+    <string name="fourche_model_pinned">Pinned</string>
+    <string name="fourche_session_created">Conversation started</string>
+    <string name="fourche_session_branched">Conversation branched</string>
 </resources>

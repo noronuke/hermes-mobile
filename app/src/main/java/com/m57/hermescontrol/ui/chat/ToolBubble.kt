@@ -130,7 +130,8 @@ internal fun ToolBubble(
 ) {
     var expanded by remember { mutableStateOf(false) }
     var showRawJson by remember { mutableStateOf(false) }
-    val chipColor = MaterialTheme.colorScheme.surfaceContainerHigh
+    // Fourche noronuke : même bloc papier au filet fin que le raisonnement.
+    val chipColor = MaterialTheme.colorScheme.surfaceContainerLow
     val contentColor = MaterialTheme.colorScheme.onSurfaceVariant
     val statusColors = LocalHermesStatusColors.current
 
@@ -162,7 +163,8 @@ internal fun ToolBubble(
         Card(
             onClick = { expanded = !expanded },
             colors = CardDefaults.cardColors(containerColor = chipColor),
-            shape = RoundedCornerShape(8.dp),
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            shape = RoundedCornerShape(12.dp),
         ) {
             Column(
                 modifier =

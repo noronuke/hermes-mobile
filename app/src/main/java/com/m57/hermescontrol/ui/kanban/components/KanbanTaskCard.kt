@@ -79,7 +79,7 @@ fun KanbanTaskCard(
     Card(
         onClick = { onTaskClick(task) },
         colors = cardColors,
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
         modifier = modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {

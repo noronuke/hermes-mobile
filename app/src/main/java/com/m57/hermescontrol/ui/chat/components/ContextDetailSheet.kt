@@ -114,7 +114,7 @@ fun ContextDetailSheet(
                         .height(8.dp)
                         .background(
                             color = MaterialTheme.colorScheme.surfaceVariant,
-                            shape = RoundedCornerShape(4.dp),
+                            shape = RoundedCornerShape(6.dp),
                         ),
             ) {
                 if (fraction != null) {
@@ -123,7 +123,7 @@ fun ContextDetailSheet(
                             Modifier
                                 .fillMaxWidth(fraction)
                                 .height(8.dp)
-                                .background(color = barColor, shape = RoundedCornerShape(4.dp)),
+                                .background(color = barColor, shape = RoundedCornerShape(6.dp)),
                     )
                 }
             }

@@ -55,7 +55,7 @@ fun GroupChatToolChip(
             tool.name.equals("execute_code", ignoreCase = true)
 
     Surface(
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
         border =
             BorderStroke(
@@ -145,7 +145,7 @@ fun GroupChatToolChip(
                 ) {
                     if (!tool.command.isNullOrBlank()) {
                         Surface(
-                            shape = RoundedCornerShape(4.dp),
+                            shape = RoundedCornerShape(6.dp),
                             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                             modifier = Modifier.fillMaxWidth(),
                         ) {
@@ -174,7 +174,7 @@ fun GroupChatToolChip(
                     val isOutputRtl = remember(outputText) { BidiUtils.isRtlText(outputText) }
 
                     Surface(
-                        shape = RoundedCornerShape(4.dp),
+                        shape = RoundedCornerShape(6.dp),
                         color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.6f),
                         modifier = Modifier.fillMaxWidth(),
                     ) {

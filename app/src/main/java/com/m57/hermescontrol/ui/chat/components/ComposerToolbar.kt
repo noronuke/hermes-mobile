@@ -235,7 +235,7 @@ fun ComposerToolbar(
         val modelLabel =
             currentSessionModel?.let { model ->
                 composerModelLabel(model, showProvider = showModelProvider)
-            } ?: "Model"
+            } ?: stringResource(R.string.fourche_label_model)
         LaunchedEffect(modelLabel) {
             modelScrollState.scrollTo(0)
         }
@@ -308,7 +308,7 @@ fun ComposerToolbar(
                         Text(
                             text =
                                 if (reasoningDisabledForModel) {
-                                    if (fastMode) stringResource(R.string.chat_fast_mode_label) else "No reasoning"
+                                    if (fastMode) stringResource(R.string.chat_fast_mode_label) else stringResource(R.string.fourche_label_no_reasoning)
                                 } else {
                                     val targetEffort = pendingReasoningLevel ?: reasoningLevel
                                     val wire = if (pendingReasoningLevel != null) null else reasoningWireLevel
@@ -549,7 +549,12 @@ fun ComposerToolbar(
                 ) {
                     Icon(
                         imageVector = if (isListening) Icons.Default.Stop else Icons.Outlined.Mic,
-                        contentDescription = if (isListening) "Stop listening" else "Mic",
+                        contentDescription =
+                            if (isListening) {
+                                stringResource(R.string.fourche_label_stop_listening)
+                            } else {
+                                stringResource(R.string.fourche_label_mic)
+                            },
                         tint = if (isConnected) micColors.contentColor else micColors.disabledContentColor,
                     )
                 }
@@ -655,7 +660,7 @@ fun ComposerToolbar(
                     ActionGlyph.VOICE -> {
                         Icon(
                             imageVector = Icons.Outlined.Mic,
-                            contentDescription = "Mic",
+                            contentDescription = stringResource(R.string.fourche_label_mic),
                             tint = palette.onAction,
                         )
                     }

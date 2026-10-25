@@ -129,7 +129,7 @@ internal fun ExpandedToolContent(
                         Modifier
                             .fillMaxWidth()
                             .heightIn(max = 200.dp)
-                            .clip(RoundedCornerShape(8.dp)),
+                            .clip(RoundedCornerShape(12.dp)),
                 )
             }
 

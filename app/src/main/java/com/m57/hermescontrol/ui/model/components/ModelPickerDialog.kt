@@ -74,7 +74,7 @@ fun ModelPickerDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(28.dp),
         containerColor = MaterialTheme.colorScheme.surface,
         tonalElevation = 6.dp,
         title = {
@@ -192,7 +192,7 @@ fun ModelPickerDialog(
                                         modifier = Modifier.size(16.dp),
                                     )
                                     Text(
-                                        text = "Pinned",
+                                        text = androidx.compose.ui.res.stringResource(com.m57.hermescontrol.R.string.fourche_model_pinned),
                                         style = MaterialTheme.typography.labelLarge,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.primary,

@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalConfiguration
@@ -136,19 +137,23 @@ fun UserBubble(
             modifier =
                 modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 2.dp),
+                    .padding(start = 48.dp, end = 12.dp, top = 2.dp, bottom = 2.dp),
             contentAlignment = Alignment.CenterEnd,
         ) {
-            // Fourche noronuke : bulle neutre (surface) plutôt qu'accentuée, comme l'appli Claude.
-            val primary = MaterialTheme.colorScheme.surfaceContainerHigh
-            val userBubbleTextColor = MaterialTheme.colorScheme.onSurface
+            // Fourche noronuke : bulle envoyée dans l'accent bordeaux, comme les messageries courantes
+            // (charte des applis du 26/10/2026) ; en sombre, bordeaux profond et texte rosé (7:1 et plus).
+            val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+            val primary =
+                if (dark) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primary
+            val userBubbleTextColor =
+                if (dark) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onPrimary
             Box {
                 Surface(
                     modifier =
                         Modifier
                             .widthIn(max = maxBubbleWidth)
                             .clip(
-                                RoundedCornerShape(18.dp),
+                                com.m57.hermescontrol.theme.Formes.BulleEnvoyee,
                             ).background(color = primary)
                             .testTag("chat_bubble_user"),
                     color = Color.Transparent,
@@ -157,13 +162,13 @@ fun UserBubble(
                     val isRtl = remember(displayContent) { BidiUtils.isRtlText(displayContent) }
                     val bubbleDirection = if (isRtl) LayoutDirection.Rtl else LocalLayoutDirection.current
                     CompositionLocalProvider(LocalLayoutDirection provides bubbleDirection) {
-                        Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)) {
+                        Column(modifier = Modifier.padding(start = 14.dp, end = 12.dp, top = 9.dp, bottom = 6.dp)) {
                             SelectionContainer {
                                 Text(
                                     text = highlightedText,
                                     color = userBubbleTextColor,
                                     style =
-                                        MaterialTheme.typography.bodyMedium.copy(
+                                        MaterialTheme.typography.bodyLarge.copy(
                                             textDirection =
                                                 if (isRtl) {
                                                     TextDirection.Rtl
@@ -209,7 +214,7 @@ fun UserBubble(
                                             imageVector = if (copied) Icons.Filled.Check else Icons.Filled.ContentCopy,
                                             contentDescription = stringResource(R.string.content_desc_copy),
                                             modifier = Modifier.size(12.dp),
-                                            tint = userBubbleTextColor.copy(alpha = 0.7f),
+                                            tint = userBubbleTextColor.copy(alpha = 0.85f),
                                         )
                                     }
                                     Spacer(modifier = Modifier.width(2.dp))
@@ -219,7 +224,7 @@ fun UserBubble(
                                                 message.timestamp,
                                                 DateFormat.is24HourFormat(LocalContext.current),
                                             ),
-                                        color = userBubbleTextColor.copy(alpha = 0.6f),
+                                        color = userBubbleTextColor.copy(alpha = 0.85f),
                                         style = MaterialTheme.typography.labelSmall,
                                     )
                                     DeliveryChecks(

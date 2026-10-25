@@ -236,14 +236,17 @@ fun ChatInputBar(
         ) {
             // One floating card holds the whole composer: suggestions, attachments,
             // the input and the controls row. Flat fill, hairline edge, no shadow.
+            // Fourche noronuke : barre flottante arrondie (famille « Feuille », 28 dp) ; les boutons
+            // ronds du bas sont posés à 10 dp du bord, concentriques à l'arrondi (pas de rond dans un carré).
             Surface(
                 modifier =
                     Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp, vertical = 8.dp),
-                shape = MaterialTheme.shapes.large,
+                shape = com.m57.hermescontrol.theme.Formes.Feuille,
                 color = palette.card,
                 border = BorderStroke(width = 1.dp, color = palette.cardBorder),
+                shadowElevation = 2.dp,
             ) {
                 Column(modifier = Modifier.padding(top = 8.dp, bottom = 10.dp)) {
                     if (isReceivingContent) {
@@ -589,7 +592,7 @@ private fun VoiceNoteLockHintOverlay(
                 modifier =
                     Modifier
                         .size(36.dp)
-                        .background(palette.control, RoundedCornerShape(8.dp)),
+                        .background(palette.control, RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
@@ -634,7 +637,7 @@ fun AttachmentChip(
     val thumbnail = attachment.uri
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
         tonalElevation = 2.dp,
     ) {
         Row(
@@ -648,7 +651,7 @@ fun AttachmentChip(
                     modifier =
                         Modifier
                             .size(48.dp)
-                            .clip(RoundedCornerShape(4.dp))
+                            .clip(RoundedCornerShape(6.dp))
                             .clickable(onClick = onPreview)
                             .testTag("attachment_preview"),
                     contentScale = ContentScale.Crop,

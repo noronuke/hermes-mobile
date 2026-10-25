@@ -228,7 +228,7 @@ private fun LevelMeter(
                     Modifier
                         .width(3.dp)
                         .height((4f + 18f * level).dp)
-                        .background(tint, RoundedCornerShape(2.dp)),
+                        .background(tint, RoundedCornerShape(6.dp)),
             )
         }
     }

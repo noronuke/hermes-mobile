@@ -156,7 +156,7 @@ private fun InlineVideoPreview(
             modifier
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
-                .clip(RoundedCornerShape(14.dp))
+                .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                 .clickable { onClick() }
                 .testTag("inline_video_player"),

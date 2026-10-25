@@ -389,7 +389,7 @@ fun MarkdownText(
                                     Modifier
                                         .width(3.dp)
                                         .fillMaxHeight()
-                                        .clip(RoundedCornerShape(2.dp))
+                                        .clip(RoundedCornerShape(6.dp))
                                         .background(textColor.copy(alpha = 0.35f)),
                             )
                             Spacer(modifier = Modifier.width(8.dp))

@@ -45,8 +45,22 @@ private fun contrastRatio(
 }
 
 internal fun composerPalette(scheme: ColorScheme): ComposerPalette {
-    val card = scheme.surfaceContainer
     val tint = scheme.onSurface.copy(alpha = CONTROL_TINT_ALPHA)
+    // Fourche noronuke : barre de saisie « papier » qui flotte sur le fond (papier en clair, palier
+    // haut en sombre), bordée d'un filet. Repli sur le palier habituel si un contraste n'y tient pas.
+    val light = scheme.background.luminance() > 0.5f
+    val paperCard = if (light) scheme.surfaceContainerLowest else scheme.surfaceContainerHigh
+    val paperOk =
+        contrastRatio(scheme.onSurface, paperCard) >= 4.5f &&
+            contrastRatio(scheme.onSurfaceVariant, paperCard) >= 3f &&
+            contrastRatio(scheme.onSurfaceVariant, tint.compositeOver(paperCard)) >= 3f &&
+            contrastRatio(scheme.onSurface, tint.compositeOver(paperCard)) >= 4.5f &&
+            contrastRatio(tint.compositeOver(paperCard), paperCard) >= 1.15f
+    val card = if (paperOk) paperCard else scheme.surfaceContainer
+    val hairline =
+        if (light) scheme.outlineVariant else scheme.onSurface.copy(alpha = 0.16f).compositeOver(scheme.background)
+    val border =
+        if (contrastRatio(hairline, scheme.background) >= 1.15f) hairline else tint.compositeOver(scheme.background)
     // Pastel primaries (Nord light) vanish on the card; keep the neutral fill there.
     val tinted = contrastRatio(scheme.primary, card) >= ACTION_MIN_CONTRAST
     val action = if (tinted) scheme.primary else scheme.onSurface
@@ -59,7 +73,7 @@ internal fun composerPalette(scheme: ColorScheme): ComposerPalette {
         }
     return ComposerPalette(
         card = card,
-        cardBorder = tint.compositeOver(scheme.background),
+        cardBorder = border,
         text = scheme.onSurface,
         placeholder = scheme.onSurfaceVariant,
         control = tint.compositeOver(card),

@@ -107,7 +107,7 @@ internal fun TaskProgressChip(
                 modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp, vertical = 2.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(12.dp))
                     .clickable(onClick = onClick)
                     .testTag("task_progress_chip"),
             color = MaterialTheme.colorScheme.surfaceContainerHighest,

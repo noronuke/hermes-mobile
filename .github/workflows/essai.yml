@@ -1,0 +1,76 @@
+# Fourche noronuke : fabrique d'essai des branches « essai/** ».
+# Compile et passe toute la suite de tests unitaires sans jamais faire échouer l'exécution
+# (continue-on-error) : on lit le résultat dans le résumé et le rapport, puis on fusionne sur main,
+# où la fabrique « Compilation APK » publie la Release.
+name: Essai
+
+on:
+  push:
+    branches: ['essai/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: essai-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  essai:
+    name: Compilation et tests (essai)
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Compilation (debug)
+        id: compilation
+        continue-on-error: true
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleDebug
+
+      - name: Tests unitaires (toute la suite)
+        id: tests
+        continue-on-error: true
+        run: ./gradlew --no-daemon testDebugUnitTest --continue
+
+      - name: Résumé
+        if: always()
+        run: |
+          {
+            echo "## Essai"
+            echo "- Compilation : ${{ steps.compilation.outcome }}"
+            echo "- Tests unitaires : ${{ steps.tests.outcome }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY" || true
+          import glob, xml.etree.ElementTree as ET
+          t = f = e = s = 0
+          echecs = []
+          for p in glob.glob('app/build/test-results/testDebugUnitTest/*.xml'):
+              r = ET.parse(p).getroot()
+              t += int(r.get('tests', 0)); f += int(r.get('failures', 0)); e += int(r.get('errors', 0)); s += int(r.get('skipped', 0))
+              for c in r.iter('testcase'):
+                  if c.find('failure') is not None or c.find('error') is not None:
+                      echecs.append(c.get('classname') + '.' + c.get('name'))
+          print(f"- Tests : {t}, échecs : {f}, erreurs : {e}, ignorés : {s}")
+          for n in echecs[:60]:
+              print(f"  - ÉCHEC {n}")
+          PY
+
+      - name: Rapport des tests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: essai-tests-${{ github.run_number }}
+          path: |
+            app/build/reports/tests/
+            app/build/test-results/
+          if-no-files-found: ignore
+          retention-days: 7

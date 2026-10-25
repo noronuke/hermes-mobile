@@ -78,7 +78,7 @@ fun AppUpdateDialog(
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
-            shape = RoundedCornerShape(20.dp),
+            shape = RoundedCornerShape(28.dp),
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 6.dp,
             modifier =
@@ -101,7 +101,7 @@ fun AppUpdateDialog(
                         modifier =
                             Modifier
                                 .size(40.dp)
-                                .clip(RoundedCornerShape(10.dp))
+                                .clip(RoundedCornerShape(12.dp))
                                 .background(MaterialTheme.colorScheme.primaryContainer),
                         contentAlignment = Alignment.Center,
                     ) {
@@ -153,7 +153,7 @@ fun AppUpdateDialog(
                             Modifier
                                 .fillMaxWidth()
                                 .heightIn(max = 180.dp)
-                                .clip(RoundedCornerShape(8.dp))
+                                .clip(RoundedCornerShape(12.dp))
                                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                                 .padding(12.dp)
                                 .verticalScroll(rememberScrollState()),
@@ -224,7 +224,7 @@ fun AppUpdateDialog(
                                         Modifier
                                             .fillMaxWidth()
                                             .height(8.dp)
-                                            .clip(RoundedCornerShape(4.dp)),
+                                            .clip(RoundedCornerShape(6.dp)),
                                 )
                             } else {
                                 LinearProgressIndicator(
@@ -232,7 +232,7 @@ fun AppUpdateDialog(
                                         Modifier
                                             .fillMaxWidth()
                                             .height(8.dp)
-                                            .clip(RoundedCornerShape(4.dp)),
+                                            .clip(RoundedCornerShape(6.dp)),
                                 )
                             }
                             Spacer(modifier = Modifier.height(12.dp))
@@ -274,7 +274,7 @@ fun AppUpdateDialog(
                                     Modifier
                                         .fillMaxWidth()
                                         .height(8.dp)
-                                        .clip(RoundedCornerShape(4.dp)),
+                                        .clip(RoundedCornerShape(6.dp)),
                             )
                         }
                     }
@@ -318,7 +318,7 @@ fun AppUpdateDialog(
                             Button(
                                 onClick = onStartUpdate,
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(10.dp),
+                                shape = RoundedCornerShape(12.dp),
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Download,

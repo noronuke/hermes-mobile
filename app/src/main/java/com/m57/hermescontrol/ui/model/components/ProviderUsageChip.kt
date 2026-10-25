@@ -56,7 +56,7 @@ fun ProviderUsageChip(
         }
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
         color = if (warn) statusColors.warningContainer else MaterialTheme.colorScheme.surfaceVariant,
         contentColor = if (warn) statusColors.onWarning else MaterialTheme.colorScheme.onSurfaceVariant,
     ) {

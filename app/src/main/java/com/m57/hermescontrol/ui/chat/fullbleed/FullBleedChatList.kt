@@ -39,6 +39,7 @@ import com.m57.hermescontrol.ui.chat.PendingSendState
 import com.m57.hermescontrol.ui.chat.SearchTarget
 import com.m57.hermescontrol.ui.chat.ToolCallDivider
 import com.m57.hermescontrol.ui.chat.UserBubble
+import com.m57.hermescontrol.ui.chat.isSessionStartMarker
 import com.m57.hermescontrol.ui.chat.components.ChatHistoryPrefetch
 import com.m57.hermescontrol.ui.chat.components.ChatScrollController
 import com.m57.hermescontrol.ui.chat.components.ClarifyBubble
@@ -122,7 +123,13 @@ fun FullBleedChatList(
     val isCompressing = transcript.isCompressing
     val compressionStatus = transcript.compressionStatus
     val speakingMessageId = transcript.speakingMessageId
-    if (shouldShowChatEmptyState(transcript, hasReplyError = replyErrorContent != null)) {
+    // Fourche noronuke : une conversation neuve ne porte que le repère « Session created » ;
+    // elle montre l'accueil illustré (pianiste du site) plutôt qu'une page vide et ce seul repère.
+    val seulementLeRepere =
+        messages.isNotEmpty() &&
+            messages.all { it.isSessionStartMarker() } &&
+            shouldShowChatEmptyState(transcript.copy(messages = emptyList()), hasReplyError = replyErrorContent != null)
+    if (seulementLeRepere || shouldShowChatEmptyState(transcript, hasReplyError = replyErrorContent != null)) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
@@ -130,6 +137,7 @@ fun FullBleedChatList(
             EmptyState(
                 title = stringResource(R.string.chat_empty_title),
                 subtitle = stringResource(R.string.chat_empty_subtitle),
+                illustration = androidx.compose.ui.res.painterResource(R.drawable.fourche_illu_pianiste),
             )
         }
     } else {

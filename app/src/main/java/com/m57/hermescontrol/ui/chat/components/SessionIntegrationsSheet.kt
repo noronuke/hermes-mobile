@@ -382,7 +382,7 @@ fun SessionIntegrationsContent(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 6.dp)
                         .testTag("session_integrations_action_error_banner"),
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(12.dp),
                 color = MaterialTheme.colorScheme.errorContainer,
             ) {
                 Row(
@@ -427,7 +427,7 @@ fun SessionIntegrationsContent(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 6.dp)
                         .testTag("session_integrations_awaiting_banner"),
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(12.dp),
                 color = MaterialTheme.colorScheme.secondaryContainer,
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {

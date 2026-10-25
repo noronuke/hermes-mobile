@@ -25,7 +25,17 @@ internal const val SESSION_CARD_MIN_TEXT_CONTRAST = 4.5f
 private const val BLEND_STEPS = 20
 
 internal fun sessionCardPalette(scheme: ColorScheme): SessionCardPalette {
-    val card = scheme.surfaceContainer
+    // Fourche noronuke : carte « papier » (surfaceContainerLowest) en clair, posée sur le fond crème,
+    // si le texte secondaire y lit au moins aussi bien ; sinon le palier habituel.
+    val paper = scheme.surfaceContainerLowest
+    val card =
+        if (scheme.background.luminance() > 0.5f &&
+            contrastRatio(scheme.onSurfaceVariant, paper) >= contrastRatio(scheme.onSurfaceVariant, scheme.surfaceContainer)
+        ) {
+            paper
+        } else {
+            scheme.surfaceContainer
+        }
     val secondary =
         (0..BLEND_STEPS)
             .asSequence()

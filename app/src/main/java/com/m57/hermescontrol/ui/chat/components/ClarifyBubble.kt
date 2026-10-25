@@ -111,7 +111,7 @@ fun ClarifyBubble(
                     Surface(
                         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                         color = MaterialTheme.colorScheme.secondaryContainer,
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(12.dp),
                     ) {
                         Row(
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),

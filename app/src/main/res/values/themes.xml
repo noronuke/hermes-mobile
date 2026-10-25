@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.HermesControl" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Fourche noronuke : fond crème dès l'ouverture (plus d'éclair blanc avant Compose). -->
+    <style name="Theme.HermesControl" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/fourche_fond</item>
+    </style>
 </resources>

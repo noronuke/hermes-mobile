@@ -25,6 +25,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.ChatBubbleOutline
+import androidx.compose.material.icons.outlined.FolderOpen
+import androidx.compose.material.icons.outlined.Forum
+import androidx.compose.material.icons.outlined.Psychology
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -357,7 +362,18 @@ fun MainNavigation(sessionId: String? = null) {
 }
 
 /** Fourche noronuke : largeur du tiroir modal, menu court. */
-private val TiroirLargeur = 260.dp
+private val TiroirLargeur = 280.dp
+
+/** Fourche noronuke : icônes au trait (famille « Outlined ») pour les cinq entrées du menu. */
+private fun iconeDuMenu(key: androidx.navigation3.runtime.NavKey): androidx.compose.ui.graphics.vector.ImageVector? =
+    when (key) {
+        ChatScreen -> Icons.Outlined.ChatBubbleOutline
+        HistoryScreen -> Icons.Outlined.Forum
+        ProjectsScreen -> Icons.Outlined.FolderOpen
+        ModelScreen -> Icons.Outlined.Psychology
+        SettingsScreen -> Icons.Outlined.Settings
+        else -> null
+    }
 
 /**
  * Wide windows show [drawerBody] in a permanent sidebar; narrow windows show it in a modal
@@ -427,33 +443,48 @@ private fun NavigationDrawerBody(
             ConnectionStatus.AUTH_EXPIRED,
             -> LocalHermesStatusColors.current.error
         }
+    // Fourche noronuke : en-tête orné du couvercle de piano de la charte (illustration du site,
+    // 33 Ko), titre à l'encre et pastille de connexion ; un filet sépare le menu.
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 2.dp),
+        modifier = Modifier.padding(start = 20.dp, top = 20.dp, end = 16.dp, bottom = 16.dp),
     ) {
-        Text(
-            text = stringResource(R.string.nav_drawer_title),
-            style =
-                MaterialTheme.typography.headlineSmall.copy(
-                    fontWeight = FontWeight.Bold,
-                ),
-            color = MaterialTheme.colorScheme.primary,
+        androidx.compose.foundation.Image(
+            painter = androidx.compose.ui.res.painterResource(R.drawable.fourche_illu_couvercle),
+            contentDescription = null,
+            modifier = Modifier.size(width = 50.dp, height = 56.dp),
         )
-        Spacer(modifier = Modifier.width(8.dp))
-        Box(
-            modifier =
-                Modifier
-                    .size(10.dp)
-                    .background(color = statusColor, shape = CircleShape),
-        )
+        Spacer(modifier = Modifier.width(14.dp))
+        Column {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(R.string.nav_drawer_title),
+                    style =
+                        MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.SemiBold,
+                        ),
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Box(
+                    modifier =
+                        Modifier
+                            .size(8.dp)
+                            .background(color = statusColor, shape = CircleShape),
+                )
+            }
+            Text(
+                text = stringResource(R.string.nav_drawer_subtitle),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
-    Text(
-        text = stringResource(R.string.nav_drawer_subtitle),
-        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, end = 16.dp),
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    HorizontalDivider(
+        modifier = Modifier.padding(horizontal = 20.dp),
+        color = MaterialTheme.colorScheme.outlineVariant,
     )
-    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+    Spacer(modifier = Modifier.height(8.dp))
 
     // #1643: a profile lock keeps only its allowed destinations; drop now-empty section headers too.
     val lockState by ProfileLock.state.collectAsState()
@@ -464,8 +495,11 @@ private fun NavigationDrawerBody(
                 .filter { hasToken && (!lockState.locked || ProfileLock.allows(it.key)) }
         entries
             .forEach { entry ->
+                // Fourche noronuke : marge intérieure de Material, pour que la pilule de sélection
+                // ne vienne plus se couper contre le bord du tiroir ; icônes au trait, d'une seule famille.
                 NavigationDrawerItem(
-                    icon = { Icon(entry.icon, contentDescription = null) },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                    icon = { Icon(iconeDuMenu(entry.key) ?: entry.icon, contentDescription = null) },
                     label = { Text(stringResource(entry.labelRes)) },
                     selected = currentScreen == entry.key,
                     onClick = {

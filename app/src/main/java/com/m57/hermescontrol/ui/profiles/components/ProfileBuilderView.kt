@@ -123,7 +123,7 @@ fun ProfileBuilderView(
                         Modifier
                             .weight(1f)
                             .height(4.dp)
-                            .clip(RoundedCornerShape(2.dp))
+                            .clip(RoundedCornerShape(6.dp))
                             .background(
                                 if (i <= step) {
                                     MaterialTheme.colorScheme.primary

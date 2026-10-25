@@ -46,7 +46,7 @@ fun PinnedSectionHeader(
         )
         Spacer(modifier = Modifier.width(spacing.xs))
         Text(
-            text = "Pinned ($count)",
+            text = androidx.compose.ui.res.stringResource(com.m57.hermescontrol.R.string.fourche_pinned_count, count),
             style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
@@ -54,7 +54,14 @@ fun PinnedSectionHeader(
         Spacer(modifier = Modifier.weight(1f))
         Icon(
             imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-            contentDescription = if (expanded) "Collapse pinned sessions" else "Expand pinned sessions",
+            contentDescription =
+                androidx.compose.ui.res.stringResource(
+                    if (expanded) {
+                        com.m57.hermescontrol.R.string.fourche_pinned_collapse
+                    } else {
+                        com.m57.hermescontrol.R.string.fourche_pinned_expand
+                    },
+                ),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp),
         )

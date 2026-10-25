@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -74,7 +75,8 @@ fun ProjectPickerChip(
                 style = MaterialTheme.typography.labelLarge.copy(textDirection = TextDirection.Content),
             )
         },
-        trailingIcon = { Icon(Icons.Filled.ArrowDropDown, contentDescription = null) },
+        // Fourche noronuke : chevron, comme le sélecteur de modèle (le triangle détonnait).
+        trailingIcon = { Icon(Icons.Filled.ExpandMore, contentDescription = null, modifier = Modifier.size(18.dp)) },
         modifier = modifier.padding(horizontal = spacing.md).testTag("chat_project_chip"),
     )
     if (open) {

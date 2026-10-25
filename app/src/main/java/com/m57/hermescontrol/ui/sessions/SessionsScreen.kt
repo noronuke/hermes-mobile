@@ -1093,7 +1093,7 @@ fun SessionsScreen(
                                         }
                                         item(key = "history_header") {
                                             Text(
-                                                text = "History",
+                                                text = stringResource(R.string.fourche_history_header),
                                                 style = MaterialTheme.typography.labelLarge,
                                                 fontWeight = FontWeight.Bold,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant,

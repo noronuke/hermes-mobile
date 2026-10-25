@@ -51,7 +51,7 @@ fun ExposedDropdownField(
             label = { Text(label) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             singleLine = true,
-            shape = RoundedCornerShape(8.dp),
+            shape = RoundedCornerShape(12.dp),
         )
 
         PrivateExposedDropdownMenu(

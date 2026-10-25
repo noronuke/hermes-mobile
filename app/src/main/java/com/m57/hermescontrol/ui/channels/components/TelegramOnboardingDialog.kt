@@ -66,7 +66,7 @@ internal fun TelegramOnboardingDialog(
                 state.onboardingError?.let { error ->
                     Surface(
                         color = LocalHermesStatusColors.current.errorContainer,
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(12.dp),
                     ) {
                         Text(
                             text = error,

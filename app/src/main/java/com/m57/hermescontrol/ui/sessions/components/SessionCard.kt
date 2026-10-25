@@ -206,19 +206,20 @@ fun SessionCard(
                     onClick = onCardClick,
                     onLongClick = { if (!isSelecting) menuExpanded = true },
                 ),
+        // Fourche noronuke : carte papier au filet fin ; l'état se lit à la pastille et à l'étiquette,
+        // plus dans un cadre épais coloré.
+        shape = com.m57.hermescontrol.theme.Formes.Carte,
         colors = CardDefaults.cardColors(containerColor = palette.card),
         border =
             if (isSelected) {
                 BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
-            } else if (!isSelecting && liveStatus != null) {
-                statusBadgeColors(liveStatus.badgeType(), statusColors)?.let { (fill, _) -> BorderStroke(2.dp, fill) }
             } else {
-                null
+                BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
             },
     ) {
         Box {
             Row(
-                modifier = Modifier.padding(spacing.md),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (isSelecting) {
@@ -247,7 +248,7 @@ fun SessionCard(
                     // (bleu pendant la réflexion, vert fini et pas lu, gris sinon).
                     Row(verticalAlignment = Alignment.CenterVertically) {
                     SessionStatusDot(liveStatus = liveStatus, sessionId = session.id, enArrierePlan = enArrierePlan)
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text =
                             if (query.isNotBlank()) {

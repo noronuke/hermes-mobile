@@ -152,7 +152,7 @@ internal fun AndroidCaCertificateList(
             TextButton(
                 onClick = { onClick(ca) },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(12.dp),
             ) {
                 Text(ca.reference.subject, modifier = Modifier.fillMaxWidth())
             }

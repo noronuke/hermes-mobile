@@ -128,7 +128,7 @@ fun ContextUsageChip(
                     .height(3.dp)
                     .background(
                         color = MaterialTheme.colorScheme.surfaceVariant,
-                        shape = RoundedCornerShape(2.dp),
+                        shape = RoundedCornerShape(6.dp),
                     ),
         ) {
             Box(
@@ -138,7 +138,7 @@ fun ContextUsageChip(
                         .height(3.dp)
                         .background(
                             color = barColor,
-                            shape = RoundedCornerShape(2.dp),
+                            shape = RoundedCornerShape(6.dp),
                         ),
             )
         }

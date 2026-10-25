@@ -408,7 +408,7 @@ private fun DailyCostChart(entries: List<AnalyticsDailyEntry>) {
                                     Modifier
                                         .fillMaxWidth()
                                         .height(barHeight * fraction.coerceAtLeast(0.02f))
-                                        .clip(RoundedCornerShape(topStart = 3.dp, topEnd = 3.dp))
+                                        .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
                                         .background(primary),
                             )
                         }

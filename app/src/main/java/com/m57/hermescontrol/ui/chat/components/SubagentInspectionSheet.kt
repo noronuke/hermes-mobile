@@ -576,7 +576,7 @@ private fun TodoInspectionCard(
             if (row.hasChildren) {
                 Spacer(modifier = Modifier.width(8.dp))
                 Surface(
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(12.dp),
                     color = MaterialTheme.colorScheme.surfaceContainerHighest,
                 ) {
                     Text(
@@ -694,7 +694,7 @@ private fun InspectionItemCard(
 
                 Spacer(modifier = Modifier.width(8.dp))
                 Surface(
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(12.dp),
                     color = statusTint.copy(alpha = 0.15f),
                 ) {
                     Text(
@@ -747,7 +747,7 @@ private fun InspectionItemCard(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(12.dp))
                             .background(MaterialTheme.colorScheme.surfaceContainerLowest)
                             .padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -961,7 +961,7 @@ private fun SubagentTranscriptView(
 ) {
     Surface(
         modifier = modifier.fillMaxWidth().testTag("subagent_transcript_container"),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
         Column(

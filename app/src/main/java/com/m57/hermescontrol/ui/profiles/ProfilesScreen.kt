@@ -315,7 +315,7 @@ fun ProfilesScreen(
                                                             Box(
                                                                 modifier =
                                                                     Modifier
-                                                                        .clip(RoundedCornerShape(4.dp))
+                                                                        .clip(RoundedCornerShape(6.dp))
                                                                         .background(
                                                                             MaterialTheme.colorScheme.surfaceVariant,
                                                                         ).padding(horizontal = 6.dp, vertical = 2.dp),
@@ -342,7 +342,7 @@ fun ProfilesScreen(
                                                             Box(
                                                                 modifier =
                                                                     Modifier
-                                                                        .clip(RoundedCornerShape(4.dp))
+                                                                        .clip(RoundedCornerShape(6.dp))
                                                                         .background(sharedGatewayContainer)
                                                                         .padding(horizontal = 6.dp, vertical = 2.dp),
                                                             ) {
@@ -386,7 +386,7 @@ fun ProfilesScreen(
                                                         Box(
                                                             modifier =
                                                                 Modifier
-                                                                    .clip(RoundedCornerShape(4.dp))
+                                                                    .clip(RoundedCornerShape(6.dp))
                                                                     .background(
                                                                         MaterialTheme.colorScheme.errorContainer,
                                                                     ).padding(horizontal = 6.dp, vertical = 2.dp),
@@ -1005,7 +1005,7 @@ fun ProfilesScreen(
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(8.dp))
+                                    .clip(RoundedCornerShape(12.dp))
                                     .background(MaterialTheme.colorScheme.surfaceVariant)
                                     .padding(12.dp),
                         ) {
