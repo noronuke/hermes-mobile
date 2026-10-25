@@ -2047,4 +2047,5 @@
     <string name="fourche_model_pinned">Pinned</string>
     <string name="fourche_session_created">Conversation started</string>
     <string name="fourche_session_branched">Conversation branched</string>
+    <string name="fourche_context_usage">%1$s / %2$s context</string>
 </resources>

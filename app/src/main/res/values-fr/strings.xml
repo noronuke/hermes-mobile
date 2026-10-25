@@ -2047,4 +2047,5 @@
     <string name="fourche_model_pinned">Épinglés</string>
     <string name="fourche_session_created">Conversation ouverte</string>
     <string name="fourche_session_branched">Conversation dérivée</string>
+    <string name="fourche_context_usage">%1$s / %2$s de contexte</string>
 </resources>

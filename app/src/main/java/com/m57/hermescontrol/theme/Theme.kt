@@ -78,7 +78,9 @@ fun HermesControlTheme(
                 dynamicLightColorScheme(context)
             }
         } else {
-            resolveColorScheme(themePreset, darkTheme)
+            // Fourche noronuke : pas de voile teinté par l'accent sur les surfaces surélevées
+            // (dialogues et feuilles viraient au rose avec le bordeaux) ; les paliers suffisent.
+            resolveColorScheme(themePreset, darkTheme).let { it.copy(surfaceTint = it.surface) }
         }
 
     val statusColors = resolveStatusColors(themePreset, darkTheme)

@@ -89,11 +89,12 @@ fun ContextUsageChip(
         ) {
             Text(
                 text =
-                    if (usedTokens != null) {
-                        "${formatTokens(usedTokens)} / ${formatTokens(full)} context"
-                    } else {
-                        "— / ${formatTokens(full)} context"
-                    },
+                    // Fourche noronuke : libellé traduit (l'anglais reste la valeur par défaut).
+                    androidx.compose.ui.res.stringResource(
+                        com.m57.hermescontrol.R.string.fourche_context_usage,
+                        if (usedTokens != null) formatTokens(usedTokens) else "—",
+                        formatTokens(full),
+                    ),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
