@@ -55,6 +55,7 @@ import java.io.File
  * captures avant/après de la refonte. Ne tourne que si CAPTURES_FOURCHE=1 (fabrique d'essai).
  * Données fictives : aucun titre réel de conversation.
  */
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [35], qualifiers = "w411dp-h923dp-xxhdpi", application = android.app.Application::class)
