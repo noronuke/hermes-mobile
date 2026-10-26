@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -209,6 +210,25 @@ class CapturesFourcheTest {
             Saisie()
         }
     }
+
+    @Composable
+    private fun Tiroir() {
+        androidx.compose.material3.ModalDrawerSheet(
+            modifier = Modifier.width(280.dp).statusBarsPadding(),
+        ) {
+            Column {
+                com.m57.hermescontrol.NavigationDrawerBody(
+                    currentScreen = com.m57.hermescontrol.ChatScreen,
+                    hasToken = true,
+                    onItemClick = {},
+                )
+            }
+        }
+    }
+
+    @Test fun tiroirClair() = capture("02-tiroir", false) { Tiroir() }
+
+    @Test fun tiroirSombre() = capture("02-tiroir", true) { Tiroir() }
 
     @Test fun listeClair() = capture("03-liste", false) { Liste() }
 

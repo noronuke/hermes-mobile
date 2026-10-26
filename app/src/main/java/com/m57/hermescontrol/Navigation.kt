@@ -423,7 +423,7 @@ internal fun AdaptiveNavigationShell(
 
 /** Drawer content shared by the modal drawer (narrow) and the permanent sidebar (wide). */
 @Composable
-private fun NavigationDrawerBody(
+internal fun NavigationDrawerBody(
     currentScreen: NavKey,
     hasToken: Boolean,
     onItemClick: () -> Unit,
