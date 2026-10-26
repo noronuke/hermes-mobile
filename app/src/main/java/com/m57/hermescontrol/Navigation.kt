@@ -31,6 +31,7 @@ import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.outlined.Psychology
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.platform.testTag
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.FilledTonalButton
@@ -423,7 +424,7 @@ internal fun AdaptiveNavigationShell(
 
 /** Drawer content shared by the modal drawer (narrow) and the permanent sidebar (wide). */
 @Composable
-private fun NavigationDrawerBody(
+internal fun NavigationDrawerBody(
     currentScreen: NavKey,
     hasToken: Boolean,
     onItemClick: () -> Unit,
@@ -443,16 +444,19 @@ private fun NavigationDrawerBody(
             ConnectionStatus.AUTH_EXPIRED,
             -> LocalHermesStatusColors.current.error
         }
-    // Fourche noronuke : en-tête orné du couvercle de piano de la charte (illustration du site,
-    // 33 Ko), titre à l'encre et pastille de connexion ; un filet sépare le menu.
+    // Fourche noronuke : en-tête sobre, le logo d'Hermes (portrait de l'icône, en silhouette au
+    // trait de l'encre) posé tel quel sur le fond du tiroir, sans pastille ni cadre ; titre à
+    // l'encre et pastille de connexion ; un filet sépare le menu. (26/10 : remplace le couvercle
+    // de piano coloré, jugé pas beau par Baptiste.)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(start = 20.dp, top = 20.dp, end = 16.dp, bottom = 16.dp),
     ) {
-        androidx.compose.foundation.Image(
-            painter = androidx.compose.ui.res.painterResource(R.drawable.fourche_illu_couvercle),
+        Icon(
+            painter = androidx.compose.ui.res.painterResource(R.drawable.ic_notification),
             contentDescription = null,
-            modifier = Modifier.size(width = 50.dp, height = 56.dp),
+            tint = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.size(40.dp).testTag("tiroir_logo"),
         )
         Spacer(modifier = Modifier.width(14.dp))
         Column {

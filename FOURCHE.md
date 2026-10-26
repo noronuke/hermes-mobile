@@ -19,7 +19,17 @@ Refonte visuelle demandée par Baptiste (« boutons arrondis dans des carrés »
 
 - **Palette** `theme/presets/DefaultScheme.kt` : crème `#F2EFE6`, papier `#FAF8F2`, filet `#DFDCCF`, encre `#1F2A24`, accent bordeaux `#7D2E3A` (sombre : nuit `#151B17`, texte crème, bordeaux éclairci `#E7A1AB`). Contrastes calculés : encre/fond 12,9:1 (sombre 14,3:1), accent/fond 7,9:1 (8,4:1), toutes les paires des tests ≥ 4,5:1. Pas de voile teinté sur les surfaces surélevées (`Theme.kt`).
 - **Formes** `theme/Shapes.kt`, objet `Formes` : Fin 6, Contrôle 12, Carte 16, Bulle 20, Feuille 28, Puce ronde ; les rayons écrits en dur sont ramenés à ces familles. Règle : jamais un élément arrondi posé dans un carré.
-- **Écrans** : cartes de conversation papier au filet fin (plus de cadre épais coloré), pastilles de 10 dp (bleu, vert, gris visible au repos), étiquette d'état en puce discrète ; barre de saisie flottante de 28 dp sur papier ; bulle envoyée en bordeaux, coin de départ en bas à droite ; raisonnements et outils en blocs papier au filet ; recherche en pilule de 48 dp ; tiroir à pilule de sélection décollée du bord, icônes au trait, en-tête au couvercle de piano ; conversation neuve illustrée par le pianiste du site (deux WebP, 65 Ko en tout, `res/drawable-nodpi/fourche_illu_*`) ; libellés anglais restants traduits (`fourche_*` dans les deux `strings.xml`).
+- **Écrans** : cartes de conversation papier au filet fin (plus de cadre épais coloré), pastilles de 10 dp (bleu, vert, gris visible au repos), étiquette d'état en puce discrète ; barre de saisie flottante de 28 dp sur papier ; bulle envoyée en bordeaux, coin de départ en bas à droite ; raisonnements et outils en blocs papier au filet ; recherche en pilule de 48 dp ; tiroir à pilule de sélection décollée du bord, icônes au trait, en-tête au logo d'Hermes (silhouette de l'icône, à l'encre, posée sur le fond du tiroir ; le couvercle de piano coloré a été retiré le 26/10) ; conversation neuve illustrée par le pianiste du site (un WebP de 32 Ko, `res/drawable-nodpi/fourche_illu_*`) ; libellés anglais restants traduits (`fourche_*` dans les deux `strings.xml`).
 - **Fabrique d'essai** `.github/workflows/essai.yml` : toute poussée sur une branche `essai/**` compile et passe toute la suite de tests en `continue-on-error`, avec le décompte dans le résumé. La suite complète a 35 échecs **hérités** de la fourche (vérification de mise à jour coupée, verrou de profil, réglages cosmétiques retirés), identiques sur `main` avant la refonte (branche `essai/temoin`) ; la fabrique principale ne lance que les tests des thèmes.
 - **Captures avant/après** : hors dépôt (le dépôt est public et les titres de conversation sont privés), dans `Projet_Hermes/06 — Application/_IA/coup-de-frais-2610/hermes/`.
 - Reste un écart assumé avec la charte : la prose des réponses garde sa police à empattements (le « style Claude » que Baptiste aime) ; à repasser en police système s'il le préfère.
+
+## Connexion : garde « réseau local » d'Android 17 (26/10/2026)
+
+Tailscale donne au NUC une adresse 100.64/10, qu'Android 17 range dans le « réseau local » : une appli
+qui vise l'API 37 doit avoir la permission `ACCESS_LOCAL_NETWORK`, sinon le système bloque la connexion
+sans rien dire. La garde de démarrage (`MainActivity.SavedSessionLanGate`) décidait de vérifier cette
+permission en résolvant le nom du serveur ; si la résolution échouait au lancement, elle concluait
+« pas de réseau local » et laissait passer. Depuis le 26/10, un nom MagicDNS (`*.ts.net`) est reconnu
+comme local sur le nom seul (`LocalNetwork.isTailscaleMagicDnsName`) : la permission est toujours
+vérifiée, et demandée si elle manque, au lieu d'un « Non connecté » muet.

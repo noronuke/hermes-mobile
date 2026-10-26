@@ -15,6 +15,12 @@ import java.net.URI
  * @return true when [host] resolves to an address Android 17 gates behind local-network permission.
  */
 fun isLocalNetworkHost(host: String): Boolean {
+    // Fourche noronuke : un nom MagicDNS de Tailscale (`*.ts.net`) désigne toujours une adresse
+    // 100.64/10. On le décide sur le nom, sans résolution : si la résolution échoue au lancement
+    // (VPN pas encore prêt), l'ancienne règle concluait « pas de réseau local », la garde de
+    // démarrage laissait passer sans la permission et Android 17 bloquait ensuite la connexion
+    // en silence (« Non connecté » sans aucune requête reçue par le NUC, 26/10/2026).
+    if (isTailscaleMagicDnsName(host)) return true
     val addr =
         runCatching { InetAddress.getByName(host) }.getOrNull() ?: return false
     if (addr.isLoopbackAddress) return false
@@ -65,3 +71,9 @@ fun requiresLocalNetworkPermission(
     sdkInt: Int,
     baseUrl: String,
 ): Boolean = sdkInt >= 37 && needsLocalNetworkPermission(baseUrl)
+
+/** Fourche noronuke : nom MagicDNS de Tailscale (`machine.tailnet.ts.net`), adresse 100.64/10. */
+fun isTailscaleMagicDnsName(host: String): Boolean {
+    val h = host.trim().trimEnd('.').lowercase()
+    return h.endsWith(".ts.net") && h.length > ".ts.net".length
+}
