@@ -33,3 +33,14 @@ permission en résolvant le nom du serveur ; si la résolution échouait au lanc
 « pas de réseau local » et laissait passer. Depuis le 26/10, un nom MagicDNS (`*.ts.net`) est reconnu
 comme local sur le nom seul (`LocalNetwork.isTailscaleMagicDnsName`) : la permission est toujours
 vérifiée, et demandée si elle manque, au lieu d'un « Non connecté » muet.
+
+### Captures du tiroir (26/10/2026)
+
+Rendus hors appareil (Robolectric, branches `essai/captures-tiroir-avant` et `-apres`), libellés en anglais (langue du rendu), données fictives.
+
+| Avant (couvercle coloré) | Après (logo d'Hermes) |
+|---|---|
+| ![](fourche/captures/2610/tiroir-avant-clair.jpg) | ![](fourche/captures/2610/tiroir-apres-clair.jpg) |
+| ![](fourche/captures/2610/tiroir-avant-sombre.jpg) | ![](fourche/captures/2610/tiroir-apres-sombre.jpg) |
+
+Logo : silhouette de l'avant-plan de l'icône (`res/drawable-nodpi/fourche_logo.webp`, 9 Ko), teinte `onSurface` : encre `#1F2A24` sur papier en clair (≈ 13:1), crème `#ECE8DC` sur nuit en sombre (≈ 14:1). Aucun cadre ni disque autour.
