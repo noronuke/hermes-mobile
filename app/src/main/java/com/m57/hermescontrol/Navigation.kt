@@ -452,11 +452,17 @@ internal fun NavigationDrawerBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(start = 20.dp, top = 20.dp, end = 16.dp, bottom = 16.dp),
     ) {
-        Icon(
-            painter = androidx.compose.ui.res.painterResource(R.drawable.ic_notification),
+        // Silhouette tirée de l'avant-plan de l'icône (noir sur transparent, WebP de 176 px de haut),
+        // teintée à l'encre (crème en sombre). Pas le vecteur ic_notification : son tracé de 60 Ko
+        // fait échouer l'analyseur de vecteurs de Compose (« Unknown command »).
+        androidx.compose.foundation.Image(
+            painter = androidx.compose.ui.res.painterResource(R.drawable.fourche_logo),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.size(40.dp).testTag("tiroir_logo"),
+            colorFilter =
+                androidx.compose.ui.graphics.ColorFilter
+                    .tint(MaterialTheme.colorScheme.onSurface),
+            contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+            modifier = Modifier.size(width = 40.dp, height = 44.dp).testTag("tiroir_logo"),
         )
         Spacer(modifier = Modifier.width(14.dp))
         Column {
