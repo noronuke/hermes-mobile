@@ -68,6 +68,8 @@ class ProfileSwitchCoordinatorTest {
         // became load-dependent -- green on an idle machine, 2 failures while the
         // emulator saturated the CPU.
         ProfileSwitchCoordinator.ioDispatcher = testDispatcher
+        // Fourche : ces tests décrivent le comportement de l'amont (profil collant du serveur).
+        com.m57.hermescontrol.Allegement.profilCollantServeur = true
 
         mockkObject(ApiClient)
         mockApi = mockk(relaxed = true)
@@ -84,9 +86,26 @@ class ProfileSwitchCoordinatorTest {
     @After
     fun tearDown() {
         ProfileSwitchCoordinator.ioDispatcher = Dispatchers.IO
+        com.m57.hermescontrol.Allegement.profilCollantServeur = false
         Dispatchers.resetMain()
         unmockkAll()
     }
+
+    @Test
+    fun `fourche - bascule locale sans toucher au profil par defaut du serveur`() =
+        runTest {
+            com.m57.hermescontrol.Allegement.profilCollantServeur = false
+
+            val result = ProfileSwitchCoordinator.switchProfile("gym")
+
+            assertTrue(result is NetworkResult.Success)
+            coVerify(exactly = 0) { mockApi.setActiveProfile(any()) }
+            verify(ordering = Ordering.ORDERED) {
+                AuthManager.setActiveProfileId("gym")
+                HermesWsClient.disconnect(clearPendingMessages = true)
+                HermesWsClient.connect()
+            }
+        }
 
     @Test
     fun `success flips server then persists selection then re-dials socket`() =

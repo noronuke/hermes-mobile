@@ -2048,4 +2048,11 @@
     <string name="fourche_session_created">Conversation started</string>
     <string name="fourche_session_branched">Conversation branched</string>
     <string name="fourche_context_usage">%1$s / %2$s context</string>
+    <!-- Fourche : sélecteur de bot (profil Hermes) -->
+    <string name="bot_selecteur_titre">Bot</string>
+    <string name="bot_selecteur_chargement">Loading bots…</string>
+    <string name="bot_selecteur_bascule">Now talking to %1$s</string>
+    <string name="bot_selecteur_echec">Could not switch to %1$s: %2$s</string>
+    <string name="bot_selecteur_liste_echec">Could not load the bots: %1$s</string>
+    <string name="bot_principal">Main</string>
 </resources>

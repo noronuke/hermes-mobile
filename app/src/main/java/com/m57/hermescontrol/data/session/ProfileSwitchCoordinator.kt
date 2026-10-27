@@ -59,9 +59,15 @@ object ProfileSwitchCoordinator {
         switchMutex.withLock {
             // #1643: refuse before the REST call so the server's sticky profile never flips.
             if (!ProfileLock.allowsActiveProfile(name)) return@withLock lockedFailure()
-            val result =
-                withContext(ioDispatcher) {
-                    safeApiCall { ApiClient.hermesApi.setActiveProfile(SetActiveProfileRequest(name)) }
+            // Fourche (Allegement.profilCollantServeur) : changement local seulement, le défaut du
+            // serveur reste intact ; les requêtes portent `profile`.
+            val result: NetworkResult<Unit> =
+                if (com.m57.hermescontrol.Allegement.profilCollantServeur) {
+                    withContext(ioDispatcher) {
+                        safeApiCall { ApiClient.hermesApi.setActiveProfile(SetActiveProfileRequest(name)) }
+                    }
+                } else {
+                    NetworkResult.Success(Unit)
                 }
             if (result !is NetworkResult.Success) return@withLock result
 

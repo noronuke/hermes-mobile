@@ -496,6 +496,17 @@ internal fun NavigationDrawerBody(
     )
     Spacer(modifier = Modifier.height(8.dp))
 
+    // Fourche : choix du bot (profil Hermes), voir Allegement.selecteurBots.
+    if (Allegement.selecteurBots && hasToken) {
+        com.m57.hermescontrol.ui.selecteurbot.SelecteurBot(
+            onChoisi = {
+                onItemClick()
+                NavigationController.navigateTo(ChatScreen)
+            },
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+    }
+
     // #1643: a profile lock keeps only its allowed destinations; drop now-empty section headers too.
     val lockState by ProfileLock.state.collectAsState()
     // Fourche noronuke : liste plate et courte (voir Allegement), sans titres de section.

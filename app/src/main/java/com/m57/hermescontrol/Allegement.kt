@@ -26,5 +26,17 @@ object Allegement {
     /** Fourche noronuke : puces de filtre de la liste des conversations (section, archivées, source, projet). */
     val filtresConversations: Boolean = false
 
+    /**
+     * Fourche : changer de bot (profil Hermes) depuis l'appli reste LOCAL. Les requêtes portent
+     * `profile` (voir WsProfileParams / ProfileScopeInterceptor) ; le profil par défaut du serveur
+     * (`hermes profile use`, POST /api/profiles/active) n'est jamais modifié : des scripts et des
+     * passerelles du serveur s'appuient sur ce défaut.
+     */
+    @Volatile
+    var profilCollantServeur: Boolean = false // var : les tests de l'amont le remettent à true
+
+    /** Fourche : sélecteur de bot (profil Hermes) dans l'en-tête du tiroir. */
+    val selecteurBots: Boolean = true
+
     fun permet(key: NavKey): Boolean = key !in interdits
 }
