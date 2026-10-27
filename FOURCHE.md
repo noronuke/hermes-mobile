@@ -44,3 +44,19 @@ Rendus hors appareil (Robolectric, branches `essai/captures-tiroir-avant` et `-a
 | ![](fourche/captures/2610/tiroir-avant-sombre.jpg) | ![](fourche/captures/2610/tiroir-apres-sombre.jpg) |
 
 Logo : silhouette de l'avant-plan de l'icône (`res/drawable-nodpi/fourche_logo.webp`, 9 Ko), teinte `onSurface` : encre `#1F2A24` sur papier en clair (≈ 13:1), crème `#ECE8DC` sur nuit en sombre (≈ 14:1). Aucun cadre ni disque autour.
+
+### Sélecteur de bot (27/10/2026)
+
+Branche `essai/selecteur-bots`, reprise de la branche `simon/multi-bots` de
+`noronuke/hermes-mobile-simon` (Simon) : un sélecteur de profil Hermes en tête du
+tiroir, le nom lisible du bot affiché, textes en français et en anglais.
+
+La bascule est **locale** : `Allegement.profilCollantServeur = false` fait sauter le
+`POST /api/profiles/active`, les requêtes portent le profil (l'intercepteur et le
+WebSocket s'en chargent), le profil par défaut du serveur n'est jamais touché — des
+scripts et la passerelle s'appuient dessus. Les tests de l'amont, qui décrivent le
+profil collant, repassent le drapeau à `true` dans leur `setUp`.
+
+Compilé et éprouvé sur le NUC (JDK 21 + `~/Android/Sdk`) : `:app:compileDebugKotlin`
+passe, `ProfileSwitchCoordinatorTest` fait 11 tests, 0 échec, dont « bascule locale
+sans toucher au profil par défaut du serveur ».
