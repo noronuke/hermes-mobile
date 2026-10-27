@@ -57,12 +57,13 @@ jobs:
 
       - name: Rapport des tests
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: rapport-tests-${{ github.run_number }}
           path: app/build/reports/tests/
           if-no-files-found: ignore
-          retention-days: 14
+          retention-days: 3
 
       - name: Publication d'une Release (pour Obtainium)
         env:

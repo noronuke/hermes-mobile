@@ -66,6 +66,7 @@ jobs:
 
       - name: Rapport des tests
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: essai-tests-${{ github.run_number }}
@@ -73,4 +74,4 @@ jobs:
             app/build/reports/tests/
             app/build/test-results/
           if-no-files-found: ignore
-          retention-days: 7
+          retention-days: 3
