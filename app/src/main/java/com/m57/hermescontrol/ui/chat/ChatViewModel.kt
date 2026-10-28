@@ -2618,6 +2618,9 @@ class ChatViewModel(
         val messageId = outgoingRequestById.remove(id)
         if (messageId != null) {
             val code = (error as? JsonRpcError)?.code
+            // The gateway refuses a submit into a chat another window holds; the reason travels
+            // as machine-readable data (4090). Retrying the same chat can never succeed.
+            val refusalReason = refusalReasonOf((error as? JsonRpcError)?.data)
             val correction = method == WsMethods.SESSION_REDIRECT || method == WsMethods.SESSION_STEER
             if (correction && code in setOf(4001, 4009, 4010)) {
                 removeUnconfirmedBubble(messageId)
@@ -2628,6 +2631,7 @@ class ChatViewModel(
                 markPendingSend(
                     messageId,
                     if (code != null && code in 4000..4999) PendingSendState.REJECTED else PendingSendState.UNKNOWN,
+                    blockedReason = refusalReason,
                 )
                 removeUnconfirmedBubble(messageId)
             }
@@ -3054,8 +3058,9 @@ class ChatViewModel(
     private fun markPendingSend(
         messageId: String,
         state: PendingSendState,
+        blockedReason: String? = null,
     ) {
-        sendStore.update(messageId) { it.copy(state = state) }
+        sendStore.update(messageId) { it.copy(state = state, blockedReason = blockedReason) }
         if (state != PendingSendState.ACCEPTED) acceptedTurnEpochById.remove(messageId)
         publishPendingSends()
         // #1427: settled/uncertain receipts remain recoverable, but cannot freeze later sends.
@@ -3348,6 +3353,27 @@ class ChatViewModel(
 
     /** A manual promotion is the only path that may retry an uncertain send. */
     @Synchronized
+    /**
+     * A chat another window holds refuses every submit into itself (4090 `SESSION_NOT_OWNED`),
+     * so "Envoyer maintenant" on that receipt can only fail again. The gateway's own advice is to
+     * start a new chat here: carry the text into a fresh session instead of looping.
+     */
+    fun sendPendingInNewChat(id: String) {
+        val row = sendStore.all().firstOrNull { it.id == id } ?: return
+        if (wsClient.connectionStatus.value != ConnectionStatus.CONNECTED) return
+        if (row.attachments.isNotEmpty()) {
+            _uiState.update {
+                it.copy(errorMessage = "Ce message porte une pièce jointe : renvoyez-le depuis le composeur")
+            }
+            return
+        }
+        removePendingSend(id)
+        publishPendingSends()
+        removeUnconfirmedBubble(id)
+        createNewSession()
+        sendMessage(row.text)
+    }
+
     fun sendQueuedNow(id: String) {
         val row = sendStore.all().firstOrNull { it.id == id } ?: return
         if (row.scope != sendScope() ||

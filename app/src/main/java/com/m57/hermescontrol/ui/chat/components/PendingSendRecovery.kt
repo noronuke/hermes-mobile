@@ -33,6 +33,7 @@ import com.m57.hermescontrol.ui.chat.InlineAttachment
 import com.m57.hermescontrol.ui.chat.PendingSend
 import com.m57.hermescontrol.ui.chat.PendingSendState
 import com.m57.hermescontrol.ui.chat.needsRecovery
+import com.m57.hermescontrol.ui.chat.SESSION_NOT_OWNED
 import com.m57.hermescontrol.ui.chat.pendingSendActivityWarning
 
 /** #1427: a compact recovery entry keeps uncertain delivery visible without a floating queue panel. */
@@ -43,6 +44,7 @@ fun PendingSendRecovery(
     canSend: Boolean,
     mainTurnBusy: Boolean,
     onSendAgain: (String) -> Unit,
+    onSendInNewChat: (String) -> Unit = {},
     onDiscard: (String) -> Unit,
     onAcknowledge: (String) -> Unit,
     onRemoveAcknowledged: (PendingSend) -> Unit,
@@ -109,7 +111,11 @@ fun PendingSendRecovery(
                                     }
 
                                     PendingSendState.REJECTED -> {
-                                        R.string.chat_pending_rejected
+                                        if (send.blockedReason == SESSION_NOT_OWNED) {
+                                            R.string.chat_pending_held_elsewhere
+                                        } else {
+                                            R.string.chat_pending_rejected
+                                        }
                                     }
                                 },
                             ),
@@ -168,6 +174,25 @@ fun PendingSendRecovery(
                                 )
                             }
                         }
+                        if (send.blockedReason == SESSION_NOT_OWNED) {
+                            // This chat belongs to another window; resubmitting here is a dead end.
+                            Row {
+                                TextButton(
+                                    onClick = { onSendInNewChat(send.id) },
+                                    enabled = canSend && !submissionInFlight,
+                                    modifier = Modifier.heightIn(min = 48.dp).testTag("pending_new_chat_${send.id}"),
+                                ) {
+                                    Text(stringResource(R.string.chat_pending_new_chat))
+                                }
+                                TextButton(
+                                    onClick = { discardId = send.id },
+                                    enabled = send.state != PendingSendState.SENDING,
+                                    modifier = Modifier.heightIn(min = 48.dp).testTag("pending_discard_${send.id}"),
+                                ) {
+                                    Text(stringResource(R.string.chat_pending_discard))
+                                }
+                            }
+                        } else {
                         Row {
                             TextButton(
                                 onClick = {
@@ -204,6 +229,7 @@ fun PendingSendRecovery(
                                     Text(stringResource(R.string.chat_pending_discard))
                                 }
                             }
+                        }
                         }
                     }
                 }

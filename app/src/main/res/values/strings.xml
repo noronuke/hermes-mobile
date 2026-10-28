@@ -307,6 +307,8 @@
     <string name="chat_pending_sending">Sending\u2026</string>
     <string name="chat_pending_accepted">Accepted by server; awaiting transcript. Sending again may duplicate it.</string>
     <string name="chat_pending_unknown">Delivery unknown; sending again may duplicate it</string>
+    <string name="chat_pending_held_elsewhere">This chat is open in another window (the desktop). It refuses this message: open a new conversation to send it.</string>
+    <string name="chat_pending_new_chat">New conversation</string>
     <string name="chat_pending_rejected">Not delivered; choose Send now to retry</string>
     <string name="chat_pending_send_now">Send now</string>
     <string name="chat_pending_send_now_warning">Sending a pending message now may interrupt active work and stop child agents.</string>

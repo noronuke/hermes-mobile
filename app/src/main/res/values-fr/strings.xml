@@ -307,6 +307,8 @@
     <string name="chat_pending_sending">Envoi\u2026</string>
     <string name="chat_pending_accepted">Accepté par le serveur ; en attente de la transcription. Un nouvel envoi peut le dupliquer.</string>
     <string name="chat_pending_unknown">Livraison inconnue ; un nouvel envoi peut le dupliquer</string>
+    <string name="chat_pending_held_elsewhere">Ce chat est ouvert dans une autre fenêtre (le poste de travail). Il refuse ce message : ouvrez une nouvelle conversation pour l’envoyer.</string>
+    <string name="chat_pending_new_chat">Nouvelle conversation</string>
     <string name="chat_pending_rejected">Non livré ; choisissez Envoyer maintenant pour réessayer</string>
     <string name="chat_pending_send_now">Envoyer maintenant</string>
     <string name="chat_pending_send_now_warning">Envoyer maintenant un message en attente peut interrompre le travail en cours et arrêter les agents enfants.</string>

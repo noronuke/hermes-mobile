@@ -27,6 +27,11 @@ data class PendingSend(
     val requiresExactReconciliation: Boolean = false,
     /** Local acknowledgment is not proof of delivery and never gates queue draining. */
     val userOrderingReleased: Boolean = false,
+    /**
+     * Machine reason of the last refusal (e.g. `SESSION_NOT_OWNED`). A chat held by another
+     * window can never be retried into itself: the card must offer a new conversation instead.
+     */
+    val blockedReason: String? = null,
 )
 
 @Serializable
@@ -92,6 +97,17 @@ internal fun pendingSendIdsConfirmedByRowIds(
 
 /** #1427: a receipt holding a gateway `user_row_id` is stored server-side and must never become UNKNOWN. */
 internal fun canDemoteAcceptedReceipt(receipt: PendingSend): Boolean = receipt.userRowId == null
+
+/** The gateway refusal reason when another window holds the chat (`prompt.submit` 4090). */
+const val SESSION_NOT_OWNED = "SESSION_NOT_OWNED"
+
+/** Machine reason carried by a 4090 refusal (`{"reason": "SESSION_NOT_OWNED"}`), else null. */
+fun refusalReasonOf(
+    data: kotlinx.serialization.json.JsonElement?,
+): String? =
+    ((data as? kotlinx.serialization.json.JsonObject)
+        ?.get("reason") as? kotlinx.serialization.json.JsonPrimitive)
+        ?.content
 
 /** Synchronous writes keep the queue recoverable when Android kills the process just after a tap. */
 class ChatSendStore(
