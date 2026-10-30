@@ -44,3 +44,16 @@ Rendus hors appareil (Robolectric, branches `essai/captures-tiroir-avant` et `-a
 | ![](fourche/captures/2610/tiroir-avant-sombre.jpg) | ![](fourche/captures/2610/tiroir-apres-sombre.jpg) |
 
 Logo : silhouette de l'avant-plan de l'icône (`res/drawable-nodpi/fourche_logo.webp`, 9 Ko), teinte `onSurface` : encre `#1F2A24` sur papier en clair (≈ 13:1), crème `#ECE8DC` sur nuit en sombre (≈ 14:1). Aucun cadre ni disque autour.
+
+## Dictée et provenance des conversations (30/10/2026)
+
+Demandé par Baptiste d'après le comportement du client Desktop : dicter, voir le texte s'écrire dans le
+champ, le compléter, re-dicter ; et, à côté, pouvoir lâcher un vocal qui part tout de suite sans attendre
+la transcription (le geste de Float). Son téléphone n'a pas de reconnaissance vocale Google : tout passe
+par la transcription du serveur (`POST /api/audio/transcribe`), comme avant.
+
+- **Tap sur le micro = dictée** (`startDictation()` dans `ChatMediaLaunchers`) : enregistrement mains libres (le bouton d'action devient l'arrêt), le texte transcrit s'écrit à la suite du champ au lieu de partir, et l'écran le dit une fois par dictée. **Appui long = vocal direct**, inchangé.
+- **File d'attente** (`ChatViewModel.sendVoiceNote(file, insertIntoComposer)`) : un vocal enregistré pendant qu'une transcription tourne n'est plus jeté, il attend son tour et se transcrit dans l'ordre d'enregistrement. La session, la connexion et la portée de profil sont retenues à l'enregistrement : si l'une a bougé, le texte revient au champ plutôt que de partir dans la mauvaise conversation.
+- **Provenance** : chaîne nouvelle `voiceTranscriptForComposer` (`ComposerInsert`, identifiant croissant pour que deux dictées identiques ne se perdent pas) et `consumeVoiceTranscript()` ; `ChatScreen` l'écrit avec `appendSpeechComposerDraft`.
+- **Liste des conversations** : `Allegement.pucesSourceConversations` rallume la rangée de puces « provenance » sans les autres filtres coupés de la fourche, et chaque carte porte l'icône et le libellé de sa source (`sourceIcon()` / `sourceLabel()` dans `SessionCard.kt`).
+- **Tests** : `ChatViewModelTest` — la file remplace l'ancien « le second vocal est jeté », plus un cas dictée qui vérifie que rien n'est envoyé. Les imports Google (`RecognizerIntent`, `SpeechInputHelper`) ne sont plus sur le chemin du micro.

@@ -26,5 +26,12 @@ object Allegement {
     /** Fourche noronuke : puces de filtre de la liste des conversations (section, archivées, source, projet). */
     val filtresConversations: Boolean = false
 
+    /**
+     * Fourche noronuke : la seule rangée de puces gardée, celle des provenances
+     * (Signal, webhooks, crons…). Baptiste veut retrouver ses conversations
+     * Signal sans les mélanger au reste, comme les sections du tableau de bord Desktop.
+     */
+    val pucesSourceConversations: Boolean = true
+
     fun permet(key: NavKey): Boolean = key !in interdits
 }

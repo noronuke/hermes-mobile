@@ -5,6 +5,7 @@
     <string name="chat_send_desc">Envoyer</string>
     <string name="chat_mic_listening">Écoute…</string>
     <string name="chat_voice_cancel">Annuler</string>
+    <string name="chat_voice_dictation_hint">Dictée : le texte s\'écrira dans le champ, appuyez sur le bouton pour arrêter</string>
     <string name="chat_voice_lock_hint">Glissez vers le haut pour verrouiller l\'enregistrement</string>
     <string name="chat_voice_record_failed">Impossible de démarrer l\'enregistrement vocal</string>
     <string name="chat_voice_send_desc">Envoyer la note vocale</string>

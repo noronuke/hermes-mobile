@@ -127,6 +127,7 @@ import com.m57.hermescontrol.ui.chat.components.SpeechText
 import com.m57.hermescontrol.ui.chat.components.SubagentInspectionSheet
 import com.m57.hermescontrol.ui.chat.components.TaskProgressChip
 import com.m57.hermescontrol.ui.chat.components.appendSharedComposerDraft
+import com.m57.hermescontrol.ui.chat.components.appendSpeechComposerDraft
 import com.m57.hermescontrol.ui.chat.components.rememberChatImagePaste
 import com.m57.hermescontrol.ui.chat.components.rememberChatMediaLaunchers
 import com.m57.hermescontrol.ui.chat.components.rememberChatScrollController
@@ -420,6 +421,14 @@ fun ChatScreen(
             viewModel.consumeComposerTextRestore()
         }
     }
+    // Fourche noronuke : la dictée transcrite s'écrit dans le champ, à compléter
+    // puis à re-dicter si besoin (même geste que le composer du Desktop).
+    LaunchedEffect(inputState, state.voiceTranscriptForComposer) {
+        state.voiceTranscriptForComposer?.let { insert ->
+            inputState.appendSpeechComposerDraft(insert.text)
+            viewModel.consumeVoiceTranscript(insert.id)
+        }
+    }
     val reloginState by viewModel.reloginState.collectAsStateWithLifecycle()
     var showSubagentInspectionSheet by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(showSubagentInspectionSheet) {
@@ -490,15 +499,14 @@ fun ChatScreen(
 
     val mediaLaunchers =
         rememberChatMediaLaunchers(
-            inputState = inputState,
             onAddAttachment = { uri, name, mimeType, size ->
                 viewModel.addAttachment(uri, name, mimeType, size)
             },
             onAddAttachments = { attachments ->
                 viewModel.addAttachments(attachments)
             },
-            onVoiceNoteRecorded = { file ->
-                viewModel.sendVoiceNote(file)
+            onVoiceNoteRecorded = { file, insertIntoComposer ->
+                viewModel.sendVoiceNote(file, insertIntoComposer)
             },
             onShowMessage = { msg ->
                 scrollScope.launch {
@@ -506,7 +514,6 @@ fun ChatScreen(
                 }
             },
             launchExternalActivity = launchExternalActivity,
-            isTranscribingVoiceNote = state.isTranscribingVoiceNote,
             context = context,
         )
 

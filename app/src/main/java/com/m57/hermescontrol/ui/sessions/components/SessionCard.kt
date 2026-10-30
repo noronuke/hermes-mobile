@@ -18,9 +18,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CallSplit
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.AccountTree
+import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -99,9 +104,15 @@ fun BranchRow(
 fun sourceIcon(source: String?): ImageVector? =
     when (source?.lowercase()) {
         "telegram", "tg" -> Icons.AutoMirrored.Filled.Send
+        "signal" -> Icons.AutoMirrored.Filled.Send
         "web", "dashboard", "webui" -> Icons.Filled.Language
         "api", "rest", "api_server" -> Icons.Filled.Code
         "cli", "terminal" -> Icons.Filled.Terminal
+        "webhook" -> Icons.Filled.Autorenew
+        "cron" -> Icons.Filled.Schedule
+        "a2a" -> Icons.Filled.AccountTree
+        "kanban" -> Icons.Filled.Description
+        "subagent" -> Icons.Filled.Extension
         else -> null
     }
 
@@ -109,6 +120,7 @@ fun sourceLabel(source: String?): String =
     when (source?.lowercase()) {
         null, "" -> "Unknown"
         "telegram", "tg" -> "Telegram"
+        "signal" -> "Signal"
         "web", "dashboard", "webui" -> "Web"
         "api", "rest", "api_server" -> "API"
         "cli", "terminal" -> "CLI"
@@ -116,6 +128,10 @@ fun sourceLabel(source: String?): String =
         "desktop" -> "Desktop"
         "acp" -> "ACP"
         "cron" -> "Cron"
+        "webhook" -> "Webhooks"
+        "a2a" -> "Agents"
+        "kanban" -> "Kanban"
+        "subagent" -> "Sous-agents"
         "bot_room" -> "Bot room"
         else -> source.replace('_', ' ').replaceFirstChar { it.uppercase() }
     }
@@ -443,6 +459,12 @@ private fun SessionCardFooter(
                                 contentDescription = sourceLabel(session.source),
                                 tint = palette.secondary,
                                 modifier = Modifier.size(MetaIconSize),
+                            )
+                            Spacer(modifier = Modifier.width(spacing.xs))
+                            Text(
+                                text = sourceLabel(session.source),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = palette.secondary,
                             )
                             Spacer(modifier = Modifier.width(spacing.sm))
                         }

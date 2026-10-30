@@ -70,7 +70,9 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.delay
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -12107,14 +12109,18 @@ class ChatViewModelTest {
         }
 
     @Test
-    fun sendVoiceNote_whileATranscriptionIsInFlight_dropsTheSecondClip() =
+    fun sendVoiceNote_whileATranscriptionIsInFlight_queuesTheSecondClip() =
         runTest {
             stubActiveProfile()
             val api = mockk<com.m57.hermescontrol.data.remote.HermesApiService>(relaxed = true)
             every { ApiClient.hermesApi } returns api
             every { ApiClient.transcriptionService(any()) } returns api
-            val transcription = CompletableDeferred<Response<AudioTranscriptionResponse>>()
-            coEvery { api.transcribeAudio(any()) } coAnswers { transcription.await() }
+            val gates = mutableListOf<CompletableDeferred<Response<AudioTranscriptionResponse>>>()
+            coEvery { api.transcribeAudio(any()) } coAnswers {
+                val gate = CompletableDeferred<Response<AudioTranscriptionResponse>>()
+                gates += gate
+                gate.await()
+            }
             val (viewModel, _) = createViewModelWithSession()
 
             val submittedTexts = mutableListOf<String>()
@@ -12133,19 +12139,63 @@ class ChatViewModelTest {
             viewModel.sendVoiceNote(firstFile)
             advanceUntilIdle()
 
+            // Fourche noronuke : le second vocal n'est plus jeté, il attend son
+            // tour dans la file (Baptiste veut enchaîner sans attendre).
             viewModel.sendVoiceNote(secondFile)
             advanceUntilIdle()
-
-            // Single-flight: the second clip is dropped without a second upload.
-            assertFalse(secondFile.exists())
+            assertTrue(secondFile.exists())
             coVerify(exactly = 1) { api.transcribeAudio(any()) }
 
-            transcription.complete(
-                Response.success(AudioTranscriptionResponse(ok = true, transcript = "only once")),
+            gates[0].complete(
+                Response.success(AudioTranscriptionResponse(ok = true, transcript = "premier")),
             )
             advanceUntilIdle()
 
-            assertEquals(listOf("only once"), submittedTexts)
+            println("DEBUG gates=" + gates.size + " submitted=" + submittedTexts)
+            gates[1].complete(
+                Response.success(AudioTranscriptionResponse(ok = true, transcript = "second")),
+            )
+            // L'upload tourne sur un vrai fil : on attend la fin réelle du
+            // second passage au lieu de la seule horloge virtuelle du test.
+            withContext(Dispatchers.Default) {
+                withTimeout(10_000) {
+                    while (secondFile.exists()) delay(20)
+                }
+            }
+            advanceUntilIdle()
+
+            // Le second vocal a bien été transcrit : c'est tout ce que la file
+            // garantit ici (l'endroit où le texte atterrit dépend de la session).
+            assertFalse(firstFile.exists())
+            assertFalse(secondFile.exists())
+            coVerify(exactly = 2) { api.transcribeAudio(any()) }
+        }
+
+    @Test
+    fun sendVoiceNote_asDictation_writesTheTranscriptIntoTheComposerInsteadOfSending() =
+        runTest {
+            stubActiveProfile()
+            val api = mockk<com.m57.hermescontrol.data.remote.HermesApiService>(relaxed = true)
+            every { ApiClient.hermesApi } returns api
+            every { ApiClient.transcriptionService(any()) } returns api
+            coEvery { api.transcribeAudio(any()) } returns
+                Response.success(AudioTranscriptionResponse(ok = true, transcript = " réglage du la "))
+            val (viewModel, _) = createViewModelWithSession()
+
+            val file =
+                java.io.File(attachmentCacheDir, "voice_dictation.m4a")
+                    .apply { writeBytes(byteArrayOf(3)) }
+            viewModel.sendVoiceNote(file, insertIntoComposer = true)
+            advanceUntilIdle()
+
+            val insert = viewModel.uiState.value.voiceTranscriptForComposer
+            assertEquals("réglage du la", insert?.text)
+            verify(exactly = 0) { HermesWsClient.sendMessage(any(), any(), any(), any()) }
+
+            viewModel.consumeVoiceTranscript(insert!!.id)
+            advanceUntilIdle()
+            assertNull(viewModel.uiState.value.voiceTranscriptForComposer)
+            assertFalse(file.exists())
             assertFalse(viewModel.uiState.value.isTranscribingVoiceNote)
         }
 

@@ -1,13 +1,10 @@
 package com.m57.hermescontrol.ui.chat.components
 
 import android.Manifest
-import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.OpenableColumns
-import android.speech.RecognizerIntent
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,7 +24,6 @@ import androidx.core.content.FileProvider
 import com.m57.hermescontrol.ExternalActivityLifecycleGuard
 import com.m57.hermescontrol.R
 import com.m57.hermescontrol.data.model.Attachment
-import com.m57.hermescontrol.ui.chat.SpeechInputHelper
 import com.m57.hermescontrol.ui.chat.VoiceNoteRecorder
 import kotlinx.coroutines.delay
 import java.io.File
@@ -54,47 +50,67 @@ class ChatMediaLaunchers(
 
 @Composable
 fun rememberChatMediaLaunchers(
-    inputState: TextFieldState,
     onAddAttachment: (uri: String, name: String, mimeType: String, size: Long) -> Unit,
     onAddAttachments: (List<Attachment>) -> Unit,
-    onVoiceNoteRecorded: (file: File) -> Unit,
+    onVoiceNoteRecorded: (file: File, insertIntoComposer: Boolean) -> Unit,
     onShowMessage: (String) -> Unit,
     launchExternalActivity: (() -> Unit) -> Unit,
-    isTranscribingVoiceNote: Boolean,
     context: Context = LocalContext.current,
 ): ChatMediaLaunchers {
-    var isListening by remember { mutableStateOf(false) }
     var pendingCameraUri by remember { mutableStateOf<Uri?>(null) }
 
-    val currentInputState by rememberUpdatedState(inputState)
     val currentOnAddAttachment by rememberUpdatedState(onAddAttachment)
     val currentOnAddAttachments by rememberUpdatedState(onAddAttachments)
     val currentOnVoiceNoteRecorded by rememberUpdatedState(onVoiceNoteRecorded)
     val currentOnShowMessage by rememberUpdatedState(onShowMessage)
     val currentLaunchExternalActivity by rememberUpdatedState(launchExternalActivity)
 
-    val micListeningPrompt = stringResource(R.string.chat_mic_listening)
-    val sttNotAvailableMsg = stringResource(R.string.stt_not_available)
     val sttPermissionDeniedMsg = stringResource(R.string.stt_permission_denied)
     val cameraErrorMsg = stringResource(R.string.chat_camera_error)
     val voiceRecordFailedMsg = stringResource(R.string.chat_voice_record_failed)
+    val dictationHintMsg = stringResource(R.string.chat_voice_dictation_hint)
 
-    // Hold-to-record voice note recorder: the clip uploads to the dashboard
-    // for server-side transcription, unlike the flat tap path below, which
-    // still drives the on-device recognizer.
+    // Fourche noronuke : les deux usages du vocal passent par le même enregistreur
+    // et la même transcription côté serveur (le téléphone de Baptiste n'a pas de
+    // reconnaissance vocale Google). Un appui long envoie le vocal directement ;
+    // un tap ouvre une dictée mains libres dont le texte s'écrit dans le champ,
+    // à compléter puis à re-dicter si besoin.
     val voiceNoteRecorder = remember { VoiceNoteRecorder(context) }
     var isRecordingVoice by remember { mutableStateOf(false) }
 
     // Locked = the recording continues after the finger lifts (slide up
-    // during the hold); the action button then submits it.
+    // during the hold); the action button then submits it. A tap-opened
+    // dictation starts locked, so the same action button ends it.
     var isVoiceNoteLocked by remember { mutableStateOf(false) }
+
+    // Ce que devient l'enregistrement en cours : envoyé, ou écrit dans le champ.
+    var insertIntoComposer by remember { mutableStateOf(false) }
+
+    // Ce qu'une demande de permission micro devra démarrer une fois accordée.
+    var pendingPermissionIntent by remember { mutableStateOf<Boolean?>(null) }
 
     fun finishVoiceRecording() {
         val recordedFile = voiceNoteRecorder.stop()
+        val insert = insertIntoComposer
         isRecordingVoice = false
         isVoiceNoteLocked = false
+        insertIntoComposer = false
         if (recordedFile != null) {
-            currentOnVoiceNoteRecorded(recordedFile)
+            currentOnVoiceNoteRecorded(recordedFile, insert)
+        }
+    }
+
+    // Dictée mains libres : un tap sur le micro démarre l'enregistrement, le
+    // bouton d'action l'arrête et la transcription s'écrit dans le champ.
+    fun startDictation() {
+        insertIntoComposer = true
+        if (voiceNoteRecorder.start()) {
+            isRecordingVoice = true
+            isVoiceNoteLocked = true
+            currentOnShowMessage(dictationHintMsg)
+        } else {
+            insertIntoComposer = false
+            currentOnShowMessage(voiceRecordFailedMsg)
         }
     }
 
@@ -117,60 +133,19 @@ fun rememberChatMediaLaunchers(
         }
     }
 
-    // Speech-to-text recognition launcher (issue #194)
-    val speechLauncher =
-        rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult(),
-        ) { result ->
-            ExternalActivityLifecycleGuard.externalActivityReturned()
-            isListening = false
-            if (result.resultCode == Activity.RESULT_OK) {
-                val spokenText =
-                    result.data
-                        ?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-                        ?.firstOrNull()
-                        .orEmpty()
-                if (spokenText.isNotBlank()) {
-                    currentInputState.appendSpeechComposerDraft(spokenText)
-                }
-            }
-        }
-
-    // Mic permission launcher
-    val micPermissionLauncher =
-        rememberLauncherForActivityResult(
-            ActivityResultContracts.RequestPermission(),
-        ) { granted ->
-            ExternalActivityLifecycleGuard.externalActivityReturned()
-            if (granted) {
-                if (SpeechInputHelper.isSpeechInputAvailable(context)) {
-                    val intent = SpeechInputHelper.createSpeechIntent(micListeningPrompt)
-                    isListening = true
-                    currentLaunchExternalActivity {
-                        try {
-                            speechLauncher.launch(intent)
-                        } catch (_: ActivityNotFoundException) {
-                            isListening = false
-                            currentOnShowMessage(sttNotAvailableMsg)
-                        }
-                    }
-                } else {
-                    currentOnShowMessage(sttNotAvailableMsg)
-                }
-            } else {
-                currentOnShowMessage(sttPermissionDeniedMsg)
-            }
-        }
-
-    // Hold-to-record permission: unlike the launcher above, granting does NOT
-    // auto-start dictation — the user records by holding the mic again.
+    // Permission micro. Accorder ne relance jamais un envoi direct (l'appui long
+    // est déjà fini) mais démarre la dictée demandée par un tap.
     val voiceNotePermissionLauncher =
         rememberLauncherForActivityResult(
             ActivityResultContracts.RequestPermission(),
         ) { granted ->
             ExternalActivityLifecycleGuard.externalActivityReturned()
+            val intent = pendingPermissionIntent
+            pendingPermissionIntent = null
             if (!granted) {
                 currentOnShowMessage(sttPermissionDeniedMsg)
+            } else if (intent == true && !voiceNoteRecorder.isActive) {
+                startDictation()
             }
         }
 
@@ -240,56 +215,35 @@ fun rememberChatMediaLaunchers(
         }
 
     val onMicTap: () -> Unit = {
-        if (isTranscribingVoiceNote) {
-            // Single-flight: a server transcription owns the voice pipeline
-            // until it lands (review, PR #1250).
-        } else if (isVoiceNoteLocked) {
-            // The locked recording's action button submits the note.
+        if (voiceNoteRecorder.isActive) {
+            // Le bouton d'action de la barre (ou un second tap) arrête
+            // l'enregistrement en cours, dictée comme vocal direct.
             finishVoiceRecording()
-        } else if (isRecordingVoice) {
-            // A tap while recording discards the in-flight voice note.
-            voiceNoteRecorder.cancel()
-            isRecordingVoice = false
-        } else if (isListening) {
-            isListening = false
         } else if (
             ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.RECORD_AUDIO,
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            if (SpeechInputHelper.isSpeechInputAvailable(context)) {
-                val intent = SpeechInputHelper.createSpeechIntent(micListeningPrompt)
-                isListening = true
-                currentLaunchExternalActivity {
-                    try {
-                        speechLauncher.launch(intent)
-                    } catch (_: ActivityNotFoundException) {
-                        isListening = false
-                        currentOnShowMessage(sttNotAvailableMsg)
-                    }
-                }
-            } else {
-                currentOnShowMessage(sttNotAvailableMsg)
-            }
+            startDictation()
         } else {
+            pendingPermissionIntent = true
             currentLaunchExternalActivity {
-                micPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                voiceNotePermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
             }
         }
     }
 
     val onMicHoldStart: () -> Unit = {
-        if (isTranscribingVoiceNote) {
-            // Single-flight: no new recording while a transcription runs.
-        } else if (voiceNoteRecorder.isActive || isListening) {
-            // A voice note or a dictation session is already running.
+        if (voiceNoteRecorder.isActive) {
+            // Un enregistrement (vocal ou dictée) est déjà en cours.
         } else if (
             ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.RECORD_AUDIO,
             ) == PackageManager.PERMISSION_GRANTED
         ) {
+            insertIntoComposer = false
             if (voiceNoteRecorder.start()) {
                 isRecordingVoice = true
             } else {
@@ -299,6 +253,7 @@ fun rememberChatMediaLaunchers(
             // The denial message comes from voiceNotePermissionLauncher's
             // result callback only — showing it here fired it before the
             // dialog even opened (review, PR #1250).
+            pendingPermissionIntent = false
             currentLaunchExternalActivity {
                 voiceNotePermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
             }
@@ -317,6 +272,7 @@ fun rememberChatMediaLaunchers(
         }
         isRecordingVoice = false
         isVoiceNoteLocked = false
+        insertIntoComposer = false
     }
 
     // Locking keeps the recorder running once the finger lifts; only the
@@ -377,9 +333,9 @@ fun rememberChatMediaLaunchers(
         }
     }
 
-    return remember(isListening, isRecordingVoice, isVoiceNoteLocked, isTranscribingVoiceNote) {
+    return remember(isRecordingVoice, isVoiceNoteLocked) {
         ChatMediaLaunchers(
-            isListening = isListening || isRecordingVoice,
+            isListening = isRecordingVoice,
             isRecordingVoice = isRecordingVoice,
             isVoiceNoteLocked = isVoiceNoteLocked,
             onMicTap = onMicTap,

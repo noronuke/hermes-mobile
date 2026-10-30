@@ -641,8 +641,10 @@ fun SessionsScreen(
             }
 
             // Source chips: hidden until a loaded row actually carries that source.
+            // Fourche noronuke : seule rangée de puces gardée — le tri par provenance
+            // (Signal, webhooks, crons), demandé par Baptiste le 30/10/2026.
             val sources = state.availableSources
-            if (Allegement.filtresConversations && sources.size > 1) {
+            if ((Allegement.filtresConversations || Allegement.pucesSourceConversations) && sources.size > 1) {
                 LazyRow(
                     modifier = Modifier.fillMaxWidth().testTag("history_source_chips"),
                     contentPadding = PaddingValues(horizontal = spacing.md),

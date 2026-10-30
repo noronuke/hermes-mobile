@@ -183,6 +183,12 @@ private sealed interface PrepareAttachmentResult {
     data object Unreadable : PrepareAttachmentResult
 }
 
+/**
+ * Fourche noronuke : une dictée transcrite à écrire dans le champ de saisie.
+ * [id] rend deux dictées successives identiques distinctes pour le composer.
+ */
+data class ComposerInsert(val id: Long, val text: String)
+
 data class ChatUiState(
     val messages: List<ChatMessage> = emptyList(),
     val currentSessionId: String? = null,
@@ -201,6 +207,12 @@ data class ChatUiState(
     val thinkingText: String = "",
     /** True while a recorded voice note uploads for server-side transcription. */
     val isTranscribingVoiceNote: Boolean = false,
+    /**
+     * Fourche noronuke : transcription d'une dictée à écrire dans le champ.
+     * L'identifiant aide le composer à ne pas perdre deux dictées identiques
+     * de suite (une même chaîne ne relance pas l'effet).
+     */
+    val voiceTranscriptForComposer: ComposerInsert? = null,
     val isLoading: Boolean = false,
     val isLoadingOlder: Boolean = false,
     val hasOlderMessages: Boolean = false,
@@ -3723,79 +3735,129 @@ class ChatViewModel(
         return true
     }
 
-    /** True while a voice-note transcription owns the mic-to-send pipeline. */
-    private var voiceNoteTranscriptionInFlight = false
+    /** Un vocal enregistré qui attend sa transcription, dans l'ordre d'arrivée. */
+    private class QueuedVoiceNote(
+        val file: File,
+        val insertIntoComposer: Boolean,
+        val recordedSessionId: String?,
+        val recordedRuntimeSessionId: String?,
+        val recordedDataScope: DataScope?,
+    )
+
+    private val queuedVoiceNotes = ArrayDeque<QueuedVoiceNote>()
+
+    /** True while the pump coroutine drains [queuedVoiceNotes]. */
+    private var voiceNotePumpActive = false
+
+    /** Identifiant monotone des dictées écrites dans le champ. */
+    private var composerInsertSeq = 0L
 
     /**
      * Transcribe a recorded voice note through the dashboard's server-side
      * STT relay (`POST /api/audio/transcribe` — the desktop client's voice
-     * path) and submit the transcript as the next message. The profile's
-     * configured STT provider answers, not the phone's on-device recognizer.
+     * path) and either submit the transcript as the next message or, when
+     * [insertIntoComposer] is set (dictation), write it into the input field.
+     * The profile's configured STT provider answers, not the phone's
+     * on-device recognizer.
      *
      * The recording belongs to the session that was active when it was taken:
      * transcription takes long enough for the socket, the profile, or the user
      * to move on, so a transcript that can no longer land in that session or
      * connection/profile scope is preserved in the composer instead of being
-     * dropped. Only one
-     * transcription runs at a time — [voiceNoteTranscriptionInFlight] keeps
-     * every branch below single-flight (review, PR #1250).
+     * dropped.
+     *
+     * Fourche noronuke : les vocaux sont mis en file au lieu d'être refusés
+     * pendant une transcription (Baptiste veut dicter puis envoyer sans
+     * attendre la fin). La file se vide dans l'ordre d'enregistrement.
      */
-    fun sendVoiceNote(file: File) {
-        if (voiceNoteTranscriptionInFlight) {
-            file.delete()
-            return
-        }
-        if (!canSubmitMessage()) {
+    fun sendVoiceNote(
+        file: File,
+        insertIntoComposer: Boolean = false,
+    ) {
+        if (!insertIntoComposer && !canSubmitMessage()) {
             file.delete()
             _uiState.update { it.copy(errorMessage = VOICE_NOTE_OFFLINE_MESSAGE) }
             return
         }
-        val recordedSessionId = _uiState.value.currentSessionId
-        val recordedRuntimeSessionId = runtimeSessionId
-        // The recording also belongs to the connection/profile scope it was
-        // taken on: both session IDs can still be null/null across a scope
-        // switch while a replacement session create is pending, so the data
-        // scope is the deciding identity for that window (review, PR #1250).
-        val recordedDataScope = AuthManager.currentDataScope()
-        voiceNoteTranscriptionInFlight = true
+        queuedVoiceNotes.addLast(
+            QueuedVoiceNote(
+                file = file,
+                insertIntoComposer = insertIntoComposer,
+                recordedSessionId = _uiState.value.currentSessionId,
+                recordedRuntimeSessionId = runtimeSessionId,
+                // The recording also belongs to the connection/profile scope it
+                // was taken on: both session IDs can still be null/null across a
+                // scope switch while a replacement session create is pending, so
+                // the data scope is the deciding identity for that window
+                // (review, PR #1250).
+                recordedDataScope = AuthManager.currentDataScope(),
+            ),
+        )
+        if (voiceNotePumpActive) return
+        voiceNotePumpActive = true
         viewModelScope.launch {
             _uiState.update { it.copy(isTranscribingVoiceNote = true) }
             try {
-                val result =
-                    withContext(ioDispatcher) {
-                        try {
-                            voiceNoteRepository.transcribe(file)
-                        } finally {
-                            file.delete()
-                        }
-                    }
-                when (result) {
-                    is NetworkResult.Success -> {
-                        val transcript = result.data.trim()
-                        if (transcript.isEmpty()) {
-                            _uiState.update { it.copy(errorMessage = VOICE_NOTE_EMPTY_MESSAGE) }
-                        } else {
-                            deliverVoiceTranscript(
-                                transcript = transcript,
-                                recordedSessionId = recordedSessionId,
-                                recordedRuntimeSessionId = recordedRuntimeSessionId,
-                                recordedDataScope = recordedDataScope,
-                            )
-                        }
-                    }
-
-                    is NetworkResult.Failure -> {
-                        Log.w(TAG, "Voice note transcription failed: ${result.error.message}")
-                        _uiState.update {
-                            it.copy(errorMessage = "$VOICE_NOTE_FAILED_MESSAGE: ${result.error.message}")
-                        }
-                    }
+                while (true) {
+                    val job = queuedVoiceNotes.removeFirstOrNull() ?: break
+                    transcribeVoiceNote(job)
                 }
             } finally {
-                // Always release the single-flight flag and the composer's
-                // transcription state, even if a branch above throws.
-                voiceNoteTranscriptionInFlight = false
+                // Always release the pump flag and the composer's transcription
+                // state, even if a branch above throws.
+                voiceNotePumpActive = false
                 _uiState.update { it.copy(isTranscribingVoiceNote = false) }
+            }
+        }
+    }
+
+    private suspend fun transcribeVoiceNote(job: QueuedVoiceNote) {
+        val result =
+            withContext(ioDispatcher) {
+                try {
+                    voiceNoteRepository.transcribe(job.file)
+                } finally {
+                    job.file.delete()
+                }
+            }
+        when (result) {
+            is NetworkResult.Success -> {
+                val transcript = result.data.trim()
+                when {
+                    transcript.isEmpty() ->
+                        _uiState.update { it.copy(errorMessage = VOICE_NOTE_EMPTY_MESSAGE) }
+
+                    job.insertIntoComposer -> {
+                        val insert = ComposerInsert(++composerInsertSeq, transcript)
+                        _uiState.update { it.copy(voiceTranscriptForComposer = insert) }
+                    }
+
+                    else ->
+                        deliverVoiceTranscript(
+                            transcript = transcript,
+                            recordedSessionId = job.recordedSessionId,
+                            recordedRuntimeSessionId = job.recordedRuntimeSessionId,
+                            recordedDataScope = job.recordedDataScope,
+                        )
+                }
+            }
+
+            is NetworkResult.Failure -> {
+                Log.w(TAG, "Voice note transcription failed: ${result.error.message}")
+                _uiState.update {
+                    it.copy(errorMessage = "$VOICE_NOTE_FAILED_MESSAGE: ${result.error.message}")
+                }
+            }
+        }
+    }
+
+    /** Le composer a écrit la dictée dans le champ : on l'oublie. */
+    fun consumeVoiceTranscript(id: Long) {
+        _uiState.update { state ->
+            if (state.voiceTranscriptForComposer?.id == id) {
+                state.copy(voiceTranscriptForComposer = null)
+            } else {
+                state
             }
         }
     }
