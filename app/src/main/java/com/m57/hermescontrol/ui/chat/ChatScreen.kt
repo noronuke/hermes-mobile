@@ -43,6 +43,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -997,6 +998,19 @@ fun ChatScreen(
                 },
             )
 
+            // Fourche noronuke : la transcription tourne, rien n'est bloqué (on peut écrire,
+            // dicter ou lâcher un autre vocal) ; les vocaux partent dans l'ordre dès que leur texte revient.
+            if (state.pendingVoiceNotes > 0) {
+                Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp)) {
+                    Text(
+                        text = stringResource(R.string.fourche_voice_pending, state.pendingVoiceNotes),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(top = 4.dp))
+                }
+            }
+
             if (!timelineState.isHistorical) {
                 PendingSendRecovery(
                     sends = state.pendingSends,
@@ -1028,7 +1042,7 @@ fun ChatScreen(
                 onMicHoldEnd = mediaLaunchers.onMicHoldEnd,
                 onMicHoldCancel = mediaLaunchers.onMicHoldCancel,
                 onMicLock = mediaLaunchers.onMicLock,
-                isListening = mediaLaunchers.isListening || state.isTranscribingVoiceNote,
+                isListening = mediaLaunchers.isListening,
                 isRecordingVoice = mediaLaunchers.isRecordingVoice,
                 isVoiceNoteLocked = mediaLaunchers.isVoiceNoteLocked,
                 amplitudeProvider = mediaLaunchers.amplitudeProvider,

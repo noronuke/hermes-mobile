@@ -2051,4 +2051,16 @@
     <string name="fourche_session_created">Conversation started</string>
     <string name="fourche_session_branched">Conversation branched</string>
     <string name="fourche_context_usage">%1$s / %2$s context</string>
+    <!-- Fourche noronuke : sections de la liste des conversations par provenance (31/10/2026). -->
+    <string name="fourche_group_main">Desktop</string>
+    <string name="fourche_group_signal">Signal</string>
+    <string name="fourche_group_webhook">Webhooks</string>
+    <string name="fourche_group_cron">Cron jobs</string>
+    <string name="fourche_group_oneshot">One-shot runs</string>
+    <string name="fourche_group_agents">Agents</string>
+    <string name="fourche_group_banc">Test sessions</string>
+    <string name="fourche_group_expand">Expand section</string>
+    <string name="fourche_group_collapse">Collapse section</string>
+    <string name="fourche_voice_pending">Transcribing (%1$d)… voice notes go out in order as soon as their text is ready</string>
+    <string name="fourche_voice_queued_hint">Voice note on its way: it is sent as soon as the transcription is ready</string>
 </resources>

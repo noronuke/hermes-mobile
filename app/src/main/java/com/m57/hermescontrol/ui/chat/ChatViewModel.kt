@@ -207,6 +207,8 @@ data class ChatUiState(
     val thinkingText: String = "",
     /** True while a recorded voice note uploads for server-side transcription. */
     val isTranscribingVoiceNote: Boolean = false,
+    // Fourche noronuke : vocaux dont le texte n'est pas encore revenu (celui en cours + la file).
+    val pendingVoiceNotes: Int = 0,
     /**
      * Fourche noronuke : transcription d'une dictée à écrire dans le champ.
      * L'identifiant aide le composer à ne pas perdre deux dictées identiques
@@ -3793,20 +3795,28 @@ class ChatViewModel(
                 recordedDataScope = AuthManager.currentDataScope(),
             ),
         )
-        if (voiceNotePumpActive) return
+        if (voiceNotePumpActive) {
+            _uiState.update { it.copy(pendingVoiceNotes = it.pendingVoiceNotes + 1) }
+            return
+        }
         voiceNotePumpActive = true
+        _uiState.update { it.copy(pendingVoiceNotes = it.pendingVoiceNotes + 1) }
         viewModelScope.launch {
             _uiState.update { it.copy(isTranscribingVoiceNote = true) }
             try {
                 while (true) {
                     val job = queuedVoiceNotes.removeFirstOrNull() ?: break
-                    transcribeVoiceNote(job)
+                    try {
+                        transcribeVoiceNote(job)
+                    } finally {
+                        _uiState.update { it.copy(pendingVoiceNotes = maxOf(0, it.pendingVoiceNotes - 1)) }
+                    }
                 }
             } finally {
                 // Always release the pump flag and the composer's transcription
                 // state, even if a branch above throws.
                 voiceNotePumpActive = false
-                _uiState.update { it.copy(isTranscribingVoiceNote = false) }
+                _uiState.update { it.copy(isTranscribingVoiceNote = false, pendingVoiceNotes = 0) }
             }
         }
     }

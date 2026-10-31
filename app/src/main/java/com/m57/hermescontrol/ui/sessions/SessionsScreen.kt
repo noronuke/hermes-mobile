@@ -132,6 +132,7 @@ import com.m57.hermescontrol.ui.sessions.components.SessionCard
 import com.m57.hermescontrol.ui.sessions.components.SessionsBulkActionBar
 import com.m57.hermescontrol.ui.sessions.components.SessionsDialogs
 import com.m57.hermescontrol.ui.sessions.components.SessionsStatsRow
+import com.m57.hermescontrol.ui.sessions.components.SourceGroupHeader
 import com.m57.hermescontrol.ui.sessions.components.automationGroups
 import com.m57.hermescontrol.ui.sessions.components.sourceLabel
 import kotlinx.coroutines.delay
@@ -1093,17 +1094,22 @@ fun SessionsScreen(
                                                 sessionCard(item)
                                             }
                                         }
+                                    }
+                                    // Fourche noronuke : la liste principale est la section « Desktop »,
+                                    // ouverte d'office ; les autres provenances suivent en dessous, repliées.
+                                    if (!state.isSearchMode) {
                                         item(key = "history_header") {
-                                            Text(
-                                                text = stringResource(R.string.fourche_history_header),
-                                                style = MaterialTheme.typography.labelLarge,
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                modifier = Modifier.padding(vertical = spacing.xs),
+                                            SourceGroupHeader(
+                                                key = "main",
+                                                count = null,
+                                                expanded = state.mainExpanded,
+                                                onToggle = { viewModel.toggleMainExpanded() },
                                             )
                                         }
                                     }
-                                    if (state.groupByProject && !state.isSearchMode) {
+                                    if (!state.mainExpanded && !state.isSearchMode) {
+                                        // section repliée : rien à afficher sous l'en-tête
+                                    } else if (state.groupByProject && !state.isSearchMode) {
                                         projectGroups.forEach { group ->
                                             val expanded = group.key !in state.collapsedProjectGroups
                                             item(key = "project_header_${group.key}") {
@@ -1146,7 +1152,9 @@ fun SessionsScreen(
                                 }
 
                                 // Load more
-                                if (state.hasMore || state.isLoadingMore) {
+                                if ((state.hasMore || state.isLoadingMore) &&
+                                    (state.mainExpanded || state.isSearchMode)
+                                ) {
                                     item {
                                         Box(
                                             modifier =
@@ -1172,6 +1180,90 @@ fun SessionsScreen(
                                                                 viewModel.loadMore()
                                                             },
                                                 )
+                                            }
+                                        }
+                                    }
+                                }
+                                // Fourche noronuke : sections par provenance (Signal, webhooks, crons…).
+                                if (state.section == HistorySection.CONVERSATIONS && !state.isSearchMode) {
+                                    SOURCE_GROUPS.forEach { group ->
+                                        val page = state.groupPages[group.key]
+                                        val rows = state.groupSessions(group.key)
+                                        val total = page?.total ?: 0
+                                        if (total == 0 && rows.isEmpty()) return@forEach
+                                        val open = group.key in state.expandedGroups
+                                        item(key = "group_header_${group.key}") {
+                                            SourceGroupHeader(
+                                                key = group.key,
+                                                count = maxOf(total, rows.size),
+                                                expanded = open,
+                                                onToggle = { viewModel.toggleGroup(group.key) },
+                                            )
+                                        }
+                                        if (open) {
+                                            val groupItems =
+                                                rows.map { session ->
+                                                    SessionTreeItem(
+                                                        session = session,
+                                                        depth = 0,
+                                                        branchStem = null,
+                                                        displayTitle =
+                                                            session.title?.takeIf(String::isNotBlank)
+                                                                ?: session.display_name?.takeIf(String::isNotBlank)
+                                                                ?: session.preview?.takeIf(String::isNotBlank)?.take(80)
+                                                                ?: "Untitled",
+                                                    )
+                                                }
+                                            if (group.key == "cron") {
+                                                automationGroups(
+                                                    groups = automationGroups(rows),
+                                                    expandedGroups = expandedAutomationGroups,
+                                                    sessionItemsById = groupItems.associateBy { it.session.id },
+                                                    spacing = spacing,
+                                                    onToggleGroup = { groupKey ->
+                                                        expandedAutomationGroups =
+                                                            if (groupKey in expandedAutomationGroups) {
+                                                                expandedAutomationGroups - groupKey
+                                                            } else {
+                                                                expandedAutomationGroups + groupKey
+                                                            }
+                                                    },
+                                                    renderSessionCard = sessionCard,
+                                                )
+                                            } else {
+                                                items(groupItems, key = { "group_${group.key}_${it.session.id}" }) { item ->
+                                                    sessionCard(item)
+                                                }
+                                            }
+                                            if (page?.loading == true) {
+                                                item(key = "group_loading_${group.key}") {
+                                                    Box(
+                                                        modifier = Modifier.fillMaxWidth().padding(vertical = spacing.sm),
+                                                        contentAlignment = Alignment.Center,
+                                                    ) {
+                                                        CircularProgressIndicator(
+                                                            modifier = Modifier.size(24.dp),
+                                                            strokeWidth = 2.dp,
+                                                        )
+                                                    }
+                                                }
+                                            } else if (page?.hasMore == true) {
+                                                item(key = "group_more_${group.key}") {
+                                                    Box(
+                                                        modifier = Modifier.fillMaxWidth().padding(vertical = spacing.sm),
+                                                        contentAlignment = Alignment.Center,
+                                                    ) {
+                                                        Text(
+                                                            text = stringResource(R.string.history_load_more),
+                                                            style = MaterialTheme.typography.labelLarge,
+                                                            color = MaterialTheme.colorScheme.primary,
+                                                            modifier =
+                                                                Modifier.clickable(role = Role.Button) {
+                                                                    viewModel.loadMoreGroup(group.key)
+                                                                },
+                                                        )
+                                                    }
+                                                }
                                             }
                                         }
                                     }

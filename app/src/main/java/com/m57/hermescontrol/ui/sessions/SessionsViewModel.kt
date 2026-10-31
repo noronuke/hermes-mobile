@@ -67,6 +67,43 @@ enum class HistorySection {
 }
 
 /**
+ * Fourche noronuke : une section de la liste des conversations par provenance, comme le panneau du
+ * Desktop (SIGNAL, WEBHOOK, CRON JOBS…). Tout le reste (Desktop, terminal, Telegram…) forme la liste
+ * principale, ouverte et chargée d'office ; ces sections-ci sont repliées et ne chargent qu'à l'ouverture.
+ */
+data class SourceGroup(
+    val key: String,
+    val sources: List<String>,
+)
+
+val SOURCE_GROUPS: List<SourceGroup> =
+    listOf(
+        SourceGroup("signal", listOf("signal")),
+        SourceGroup("webhook", listOf("webhook")),
+        SourceGroup("cron", listOf("cron")),
+        SourceGroup("oneshot", listOf("oneshot")),
+        SourceGroup("agents", listOf("a2a", "subagent", "kanban")),
+        SourceGroup("banc", listOf("banc")),
+    )
+
+/** Provenances écartées de la liste principale (elles ont leur propre section). */
+const val EXCLUS_LISTE_PRINCIPALE = "cron,signal,webhook,oneshot,a2a,subagent,kanban,banc"
+
+fun sourceGroupOf(source: String?): SourceGroup? {
+    val s = source?.lowercase() ?: return null
+    return SOURCE_GROUPS.firstOrNull { s in it.sources }
+}
+
+/** État d'une section par provenance : combien elle compte, où en est son chargement. */
+data class GroupPage(
+    val total: Int = 0,
+    val offset: Int = 0,
+    val hasMore: Boolean = false,
+    val loading: Boolean = false,
+    val loaded: Boolean = false,
+)
+
+/**
  * Compact count for stat cards: max 3 digits + unit letter.
  * 987 → "987", 100987 → "100k", 1234567 → "1.23m", 100000000 → "100m".
  */
@@ -144,6 +181,10 @@ data class SessionsUiState(
     val showArchived: Boolean = false,
     val sourceFilter: String? = null,
     val pinnedExpanded: Boolean = true,
+    // Fourche noronuke : sections par provenance (la liste principale est ouverte, les autres repliées).
+    val mainExpanded: Boolean = true,
+    val expandedGroups: Set<String> = emptySet(),
+    val groupPages: Map<String, GroupPage> = emptyMap(),
     // Project filter (issue #1526): a [sessionProjectKey], or null for all projects.
     val projectFilter: String? = null,
     val groupByProject: Boolean = false,
@@ -197,7 +238,14 @@ data class SessionsUiState(
         get() = sourceFilter?.takeIf { it in availableSources }
 
     private val visibleBySource: List<SessionInfo>
-        get() = if (showHidden) sessions else sessions.filter { it.hidden != true }
+        get() =
+            (if (showHidden) sessions else sessions.filter { it.hidden != true })
+                .filter { sourceGroupOf(it.source) == null }
+
+    /** Les lignes chargées d'une section par provenance, dans l'ordre reçu (les plus récentes d'abord). */
+    fun groupSessions(key: String): List<SessionInfo> =
+        (if (showHidden) sessions else sessions.filter { it.hidden != true })
+            .filter { sourceGroupOf(it.source)?.key == key }
 
     private val sourceFiltered: List<SessionInfo>
         get() =
@@ -311,7 +359,7 @@ class SessionsViewModel(
                                 offset = 0,
                                 order = "recent",
                                 source = capturedSection.source,
-                                excludeSources = capturedSection.excludeSources,
+                                excludeSources = capturedSection.listExcludeSources,
                                 archived = _uiState.value.archivedQuery,
                             )
                         }
@@ -348,12 +396,13 @@ class SessionsViewModel(
                                 accumulatedCount = newSessions.size,
                             )
                         it.copy(
-                            sessions = newSessions,
+                            sessions = newSessions + it.sessions.filter { s -> sourceGroupOf(s.source) != null },
                             total = paging.total,
                             hasMore = paging.hasMore,
                         )
                     }
                     stitchMissingParents(requestGeneration)
+                    refreshGroups()
                 }
             },
         )
@@ -395,6 +444,7 @@ class SessionsViewModel(
         _uiState.update {
             it.copy(
                 sessions = emptyList(),
+                groupPages = emptyMap(),
                 isChangingHistory = false,
                 total = 0,
                 hasMore = false,
@@ -435,6 +485,119 @@ class SessionsViewModel(
 
     fun togglePinnedExpanded() {
         _uiState.update { it.copy(pinnedExpanded = !it.pinnedExpanded) }
+    }
+
+    fun toggleMainExpanded() {
+        _uiState.update { it.copy(mainExpanded = !it.mainExpanded) }
+    }
+
+    /** Ouvre ou referme une section par provenance ; la première ouverture charge ses conversations. */
+    fun toggleGroup(key: String) {
+        val state = _uiState.value
+        if (key in state.expandedGroups) {
+            _uiState.update { it.copy(expandedGroups = it.expandedGroups - key) }
+            return
+        }
+        _uiState.update { it.copy(expandedGroups = it.expandedGroups + key) }
+        if (state.groupPages[key]?.loaded != true) loadGroupPage(key, reset = true)
+    }
+
+    fun loadMoreGroup(key: String) = loadGroupPage(key, reset = false)
+
+    /** Compte les conversations de chaque section (une requête d'une ligne par section). */
+    private fun loadGroupCounts() {
+        if (_uiState.value.section != HistorySection.CONVERSATIONS) return
+        val requestGeneration = generation
+        val requestScope = runCatching { AuthManager.currentDataScope() }.getOrNull()
+        SOURCE_GROUPS.forEach { group ->
+            viewModelScope.launch {
+                val result =
+                    safeApiRead {
+                        ApiClient.hermesApi.getSessions(
+                            limit = 1,
+                            offset = 0,
+                            order = "recent",
+                            archived = _uiState.value.archivedQuery,
+                            sources = group.sources.joinToString(","),
+                        )
+                    }
+                val currentScope = runCatching { AuthManager.currentDataScope() }.getOrNull()
+                if (requestGeneration != generation || currentScope != requestScope) return@launch
+                if (result is NetworkResult.Success) {
+                    val total = result.data.total
+                    _uiState.update {
+                        val prev = it.groupPages[group.key] ?: GroupPage()
+                        it.copy(groupPages = it.groupPages + (group.key to prev.copy(total = total)))
+                    }
+                }
+            }
+        }
+    }
+
+    /** Recharge la première page des sections ouvertes (changement signalé par la passerelle). */
+    private fun refreshGroups() {
+        loadGroupCounts()
+        _uiState.value.expandedGroups.forEach { key -> loadGroupPage(key, reset = true) }
+    }
+
+    private fun loadGroupPage(
+        key: String,
+        reset: Boolean,
+    ) {
+        val group = SOURCE_GROUPS.firstOrNull { it.key == key } ?: return
+        val current = _uiState.value.groupPages[key] ?: GroupPage()
+        if (current.loading) return
+        val offset = if (reset) 0 else current.offset
+        val requestGeneration = generation
+        val requestScope = runCatching { AuthManager.currentDataScope() }.getOrNull()
+        _uiState.update { it.copy(groupPages = it.groupPages + (key to current.copy(loading = true))) }
+        viewModelScope.launch {
+            val result =
+                safeApiRead {
+                    ApiClient.hermesApi.getSessions(
+                        limit = PAGE_SIZE,
+                        offset = offset,
+                        order = "recent",
+                        archived = _uiState.value.archivedQuery,
+                        sources = group.sources.joinToString(","),
+                    )
+                }
+            val currentScope = runCatching { AuthManager.currentDataScope() }.getOrNull()
+            if (requestGeneration != generation || currentScope != requestScope) return@launch
+            when (result) {
+                is NetworkResult.Success -> {
+                    val data = result.data
+                    val fetched = data.sessions.orEmpty()
+                    val next = data.nextOffset(offset)
+                    _uiState.update { st ->
+                        val kept =
+                            if (reset) st.sessions.filter { sourceGroupOf(it.source)?.key != key } else st.sessions
+                        st.copy(
+                            sessions = (kept + fetched).distinctBy { it.id },
+                            groupPages =
+                                st.groupPages +
+                                    (
+                                        key to
+                                            GroupPage(
+                                                total = data.total,
+                                                offset = next,
+                                                hasMore = fetched.isNotEmpty() && next < data.total,
+                                                loading = false,
+                                                loaded = true,
+                                            )
+                                    ),
+                        )
+                    }
+                }
+
+                is NetworkResult.Failure -> {
+                    _uiState.update { st ->
+                        val prev = st.groupPages[key] ?: GroupPage()
+                        st.copy(groupPages = st.groupPages + (key to prev.copy(loading = false)))
+                    }
+                }
+            }
+        }
     }
 
     private fun stitchMissingParents(requestGeneration: Long) =
@@ -480,6 +643,10 @@ class SessionsViewModel(
     private val HistorySection.excludeSources: String?
         get() = if (this == HistorySection.CONVERSATIONS) "cron" else null
 
+    // Fourche noronuke : la liste (pas la recherche) laisse aux sections par provenance leurs conversations.
+    private val HistorySection.listExcludeSources: String?
+        get() = if (this == HistorySection.CONVERSATIONS) EXCLUS_LISTE_PRINCIPALE else null
+
     private fun com.m57.hermescontrol.data.model.SessionListResponse.nextOffset(requestOffset: Int): Int =
         if (limit > 0) offset + limit else requestOffset + PAGE_SIZE
 
@@ -501,6 +668,7 @@ class SessionsViewModel(
                 isLoading = false,
                 isLoadingMore = false,
                 sessions = emptyList(),
+                groupPages = emptyMap(),
                 total = 0,
                 hasMore = false,
                 errorMessage = null,
@@ -563,7 +731,7 @@ class SessionsViewModel(
             _uiState.update {
                 it.copy(
                     isLoading = false,
-                    sessions = sessionsList,
+                    sessions = sessionsList + it.sessions.filter { s -> sourceGroupOf(s.source) != null },
                     total = paging.total,
                     hasMore = paging.hasMore,
                     errorMessage = null,
@@ -571,6 +739,7 @@ class SessionsViewModel(
             }
         }
         pageJob?.cancel()
+        loadGroupCounts()
         loadEmptyCount()
         if (trackingJob?.isActive == true) {
             refreshLiveStatuses()
@@ -586,7 +755,7 @@ class SessionsViewModel(
                             offset = 0,
                             order = "recent",
                             source = section.source,
-                            excludeSources = section.excludeSources,
+                            excludeSources = section.listExcludeSources,
                             archived = _uiState.value.archivedQuery,
                         )
                     }
@@ -615,7 +784,7 @@ class SessionsViewModel(
                         it.copy(
                             isLoading = false,
                             isLoadingMore = false,
-                            sessions = sessionsList,
+                            sessions = sessionsList + it.sessions.filter { s -> sourceGroupOf(s.source) != null },
                             total = paging.total,
                             hasMore = paging.hasMore,
                             selectedIds = emptySet(),
@@ -669,7 +838,7 @@ class SessionsViewModel(
                             offset = offset,
                             order = "recent",
                             source = state.section.source,
-                            excludeSources = state.section.excludeSources,
+                            excludeSources = state.section.listExcludeSources,
                             archived = state.archivedQuery,
                         )
                     }
@@ -691,7 +860,7 @@ class SessionsViewModel(
                                     pageSize = PAGE_SIZE,
                                     addedNewItems = addedNewItems,
                                     backendTotal = data.total,
-                                    accumulatedCount = newSessions.size,
+                                    accumulatedCount = newSessions.count { s -> sourceGroupOf(s.source) == null },
                                 )
                             it.copy(
                                 isLoadingMore = false,
@@ -1317,7 +1486,7 @@ class SessionsViewModel(
     private fun invalidateHistoryCaches(owner: DataScope) {
         for (section in HistorySection.entries) {
             for (archived in listOf(false, true)) {
-                val key = "${section.name}:${section.source}:${section.excludeSources}:$archived"
+                val key = "${section.name}:${section.source}:${section.listExcludeSources}:$archived"
                 sessionsPageCache.remove(owner.inMemoryKey(key))
                 SessionListCacheStore.remove(owner.persistentKey(key))
             }
@@ -1326,12 +1495,12 @@ class SessionsViewModel(
 
     /** Switch between the active list and the archived-only list. */
     fun toggleShowArchived() {
-        _uiState.update { it.copy(showArchived = !it.showArchived, sessions = emptyList(), selectedIds = emptySet()) }
+        _uiState.update { it.copy(showArchived = !it.showArchived, sessions = emptyList(), groupPages = emptyMap(), selectedIds = emptySet()) }
         loadSessions()
     }
 
     private fun listKey(section: HistorySection) =
-        "${section.name}:${section.source}:${section.excludeSources}:${_uiState.value.showArchived}"
+        "${section.name}:${section.source}:${section.listExcludeSources}:${_uiState.value.showArchived}"
 
     private fun invalidateListCache() {
         val section = _uiState.value.section

@@ -61,6 +61,7 @@ import com.m57.hermescontrol.ui.logs.LogsViewModel
 import com.m57.hermescontrol.ui.model.ModelViewModel
 import com.m57.hermescontrol.ui.plugins.PluginsViewModel
 import com.m57.hermescontrol.ui.sessions.SessionsViewModel
+import com.m57.hermescontrol.ui.sessions.EXCLUS_LISTE_PRINCIPALE
 import com.m57.hermescontrol.ui.skills.SkillsViewModel
 import com.m57.hermescontrol.ui.system.SystemViewModel
 import io.mockk.*
@@ -645,7 +646,7 @@ class E2eIntegrationTest {
         runTest {
             val session = SessionInfo("session-123", "Session 1", "2026-06-15T15:10:00Z", 5, "active")
             coEvery {
-                mockApiService.getSessions(any(), any(), any(), null, "cron")
+                mockApiService.getSessions(any(), any(), any(), null, EXCLUS_LISTE_PRINCIPALE)
             } returns Response.success(SessionListResponse(listOf(session)))
 
             val viewModel = SessionsViewModel()
@@ -681,7 +682,7 @@ class E2eIntegrationTest {
     @Test
     fun testSessionsLoad_failure() =
         runTest {
-            coEvery { mockApiService.getSessions(any(), any(), any(), null, "cron") } returns createErrorResponse(500)
+            coEvery { mockApiService.getSessions(any(), any(), any(), null, EXCLUS_LISTE_PRINCIPALE) } returns createErrorResponse(500)
 
             val viewModel = SessionsViewModel()
             viewModel.loadSessions()

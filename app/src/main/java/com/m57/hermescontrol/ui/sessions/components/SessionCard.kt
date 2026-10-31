@@ -113,6 +113,8 @@ fun sourceIcon(source: String?): ImageVector? =
         "a2a" -> Icons.Filled.AccountTree
         "kanban" -> Icons.Filled.Description
         "subagent" -> Icons.Filled.Extension
+        "oneshot" -> Icons.Filled.Description
+        "banc" -> Icons.Filled.Terminal
         else -> null
     }
 
@@ -132,6 +134,8 @@ fun sourceLabel(source: String?): String =
         "a2a" -> "Agents"
         "kanban" -> "Kanban"
         "subagent" -> "Sous-agents"
+        "oneshot" -> "Tâche ponctuelle"
+        "banc" -> "Séance de test"
         "bot_room" -> "Bot room"
         else -> source.replace('_', ' ').replaceFirstChar { it.uppercase() }
     }

@@ -69,6 +69,7 @@ fun rememberChatMediaLaunchers(
     val cameraErrorMsg = stringResource(R.string.chat_camera_error)
     val voiceRecordFailedMsg = stringResource(R.string.chat_voice_record_failed)
     val dictationHintMsg = stringResource(R.string.chat_voice_dictation_hint)
+    val voiceQueuedHintMsg = stringResource(R.string.fourche_voice_queued_hint)
 
     // Fourche noronuke : les deux usages du vocal passent par le même enregistreur
     // et la même transcription côté serveur (le téléphone de Baptiste n'a pas de
@@ -97,6 +98,7 @@ fun rememberChatMediaLaunchers(
         insertIntoComposer = false
         if (recordedFile != null) {
             currentOnVoiceNoteRecorded(recordedFile, insert)
+            if (!insert) currentOnShowMessage(voiceQueuedHintMsg)
         }
     }
 

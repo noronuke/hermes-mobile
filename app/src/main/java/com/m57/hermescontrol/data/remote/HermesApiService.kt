@@ -204,6 +204,8 @@ interface HermesApiService : KanbanApiService {
         @Query("exclude_sources") excludeSources: String? = null,
         // exclude (backend default) | include | only (issue #1496)
         @Query("archived") archived: String? = null,
+        // Fourche noronuke : plusieurs provenances d'un coup, séparées par des virgules.
+        @Query("sources") sources: String? = null,
     ): Response<SessionListResponse>
 
     @GET("api/sessions/search")

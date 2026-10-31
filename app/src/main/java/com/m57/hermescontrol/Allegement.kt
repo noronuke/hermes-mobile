@@ -31,7 +31,7 @@ object Allegement {
      * (Signal, webhooks, crons…). Baptiste veut retrouver ses conversations
      * Signal sans les mélanger au reste, comme les sections du tableau de bord Desktop.
      */
-    val pucesSourceConversations: Boolean = true
+    val pucesSourceConversations: Boolean = false
 
     fun permet(key: NavKey): Boolean = key !in interdits
 }

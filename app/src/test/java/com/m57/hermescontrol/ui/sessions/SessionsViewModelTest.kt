@@ -501,7 +501,7 @@ class SessionsViewModelTest {
     @Test
     fun `sections request conversations excluding cron and automations from cron`() {
         val vm = createViewModel()
-        coEvery { mockApi.getSessions(50, 0, any(), null, "cron") } returns
+        coEvery { mockApi.getSessions(50, 0, any(), null, EXCLUS_LISTE_PRINCIPALE) } returns
             Response.success(SessionListResponse(listOf(SessionInfo("conversation"))))
         coEvery { mockApi.getSessions(50, 0, any(), "cron", null) } returns
             Response.success(SessionListResponse(listOf(SessionInfo("automation", source = "cron"))))
@@ -524,7 +524,7 @@ class SessionsViewModelTest {
             vm.uiState.value.sessions
                 .map { it.id },
         )
-        coVerify(exactly = 1) { mockApi.getSessions(50, 0, any(), null, "cron") }
+        coVerify(exactly = 1) { mockApi.getSessions(50, 0, any(), null, EXCLUS_LISTE_PRINCIPALE) }
         coVerify(exactly = 1) { mockApi.getSessions(50, 0, any(), "cron", null) }
     }
 
@@ -598,7 +598,7 @@ class SessionsViewModelTest {
     fun `late load from a previous section cannot replace the current rows`() {
         val vm = createViewModel()
         val oldResponse = kotlinx.coroutines.CompletableDeferred<Response<SessionListResponse>>()
-        coEvery { mockApi.getSessions(50, 0, any(), null, "cron") } coAnswers {
+        coEvery { mockApi.getSessions(50, 0, any(), null, EXCLUS_LISTE_PRINCIPALE) } coAnswers {
             kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) { oldResponse.await() }
         }
         coEvery { mockApi.getSessions(50, 0, any(), "cron", null) } returns
@@ -659,7 +659,7 @@ class SessionsViewModelTest {
                 offset = 0,
                 order = any(),
                 source = null,
-                excludeSources = "cron",
+                excludeSources = EXCLUS_LISTE_PRINCIPALE,
             )
         } returns
             Response.success(
@@ -682,7 +682,7 @@ class SessionsViewModelTest {
                 offset = 50,
                 order = any(),
                 source = null,
-                excludeSources = "cron",
+                excludeSources = EXCLUS_LISTE_PRINCIPALE,
             )
         } returns
             Response.success(
@@ -711,7 +711,7 @@ class SessionsViewModelTest {
                 offset = 0,
                 order = any(),
                 source = null,
-                excludeSources = "cron",
+                excludeSources = EXCLUS_LISTE_PRINCIPALE,
             )
         } returns
             Response.success(

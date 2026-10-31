@@ -2051,4 +2051,16 @@
     <string name="fourche_session_created">Conversation ouverte</string>
     <string name="fourche_session_branched">Conversation dérivée</string>
     <string name="fourche_context_usage">%1$s / %2$s de contexte</string>
+    <!-- Fourche noronuke : sections de la liste des conversations par provenance (31/10/2026). -->
+    <string name="fourche_group_main">Desktop</string>
+    <string name="fourche_group_signal">Signal</string>
+    <string name="fourche_group_webhook">Webhooks</string>
+    <string name="fourche_group_cron">Tâches planifiées</string>
+    <string name="fourche_group_oneshot">Tâches ponctuelles</string>
+    <string name="fourche_group_agents">Agents</string>
+    <string name="fourche_group_banc">Séances de test</string>
+    <string name="fourche_group_expand">Déplier la section</string>
+    <string name="fourche_group_collapse">Replier la section</string>
+    <string name="fourche_voice_pending">Transcription en cours (%1$d)… les vocaux partent dans l\'ordre dès que leur texte est prêt</string>
+    <string name="fourche_voice_queued_hint">Vocal en route : il part dès que la transcription est prête</string>
 </resources>
