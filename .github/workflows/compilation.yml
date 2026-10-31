@@ -52,8 +52,8 @@ jobs:
         run: |
           AMONT=$(cat VERSION_AMONT)
           ./gradlew --no-daemon assembleRelease \
-            -PversionName="${AMONT}-noro.${{ github.run_number }}" \
-            -PversionCode="$((300000 + ${{ github.run_number }}))"
+            -PversionName="${AMONT}-noro.$((100 + ${{ github.run_number }}))" \
+            -PversionCode="$((300100 + ${{ github.run_number }}))"
 
       - name: Rapport des tests
         if: always()
@@ -69,7 +69,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          VERSION="$(cat VERSION_AMONT)-noro.${{ github.run_number }}"
+          VERSION="$(cat VERSION_AMONT)-noro.$((100 + ${{ github.run_number }}))"
           cp app/build/outputs/apk/release/app-release.apk "hermes-${VERSION}.apk"
           gh release create "v${VERSION}" "hermes-${VERSION}.apk" \
             --title "Hermes ${VERSION}" \
